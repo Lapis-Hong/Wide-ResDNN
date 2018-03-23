@@ -1,0 +1,41 @@
+# Model Parameter Configuration
+
+# Wide Parameters
+## optimizer: one of {'`Adagrad`, `Adam`, `Ftrl`, `RMSProp`, `SGD`}
+#wide_optimizer: 'Ftrl'
+wide_learning_rate: 0.1
+# regularization parameters, optional
+wide_l1: 0.5
+wide_l2: 1
+
+
+# Deep Parameters
+# connected_mode: one of {`simple`, `first_dense`, `last_dense`, `dense`, `resnet`}
+#                 or arbitrary connections index tuples.
+#   1. `simple`: normal dnn architecture.
+#   2. `first_dense`: add addition connections from first input layer to all hidden layers.
+#   3. `last_dense`: add addition connections from all previous layers to last layer.
+#   4. `dense`: add addition connections between all layers, similar to DenseNet.
+#   5. `resnet`: add addition connections between adjacent layers, similar to ResNet.
+#   6. arbitrary connections list: add addition connections from layer_0 to layer_1 like 0-1.
+#      eg: [0-1,0-3,1-2]  index start from zero(input_layer), max index is len(hidden_units), smaller index first.
+
+# to use multi dnn model, set nested hidden_units, eg: [[1024,512,256], [512,256]]
+# connected_mode can be set different for each dnn eg: ['simple', 'dense'] or use same mode if only set 'simple'
+# only above 2 network architecture parameters can be different, other parameters are same for multi dnn model.
+
+# network architecture
+hidden_units: [1024,512,256]
+connected_mode: 'simple'
+#deep_optimizer: 'Adagrad'
+deep_learning_rate: 0.1
+activation_function: 'tf.nn.relu'
+# regularization parameters, optional, set empty to be default None
+deep_l1: 0.01
+deep_l2: 0.01
+dropout:
+batch_normalization: 1 # bool
+
+
+
+
