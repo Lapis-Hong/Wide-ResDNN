@@ -1,0 +1,234 @@
+f1:
+  parameter:
+    boundaries: null
+    mean: 1.87
+    std: 7.2
+  type: continuous
+f10:
+  parameter:
+    boundaries: null
+    mean: 0.32
+    std: 0.57
+  type: continuous
+f11:
+  parameter:
+    boundaries: null
+    mean: 2.23
+    std: 4.48
+  type: continuous
+f12:
+  parameter:
+    boundaries: null
+    mean: 0.2
+    std: 1.85
+  type: continuous
+f13:
+  parameter:
+    boundaries: null
+    mean: 8.75
+    std: 18.48
+  type: continuous
+f14:
+  embedding_dim: auto
+  parameter:
+    embedding_dim: 8
+    hash_bucket_size: 600
+  type: category
+f15:
+  embedding_dim: auto
+  parameter:
+    embedding_dim: 8
+    hash_bucket_size: 2000
+  type: category
+f16:
+  embedding_dim: auto
+  parameter:
+    embedding_dim: 8
+    hash_bucket_size: 20000
+  type: category
+f17:
+  embedding_dim: auto
+  parameter:
+    embedding_dim: 8
+    hash_bucket_size: 9000
+  type: category
+f18:
+  embedding_dim: auto
+  parameter:
+    embedding_dim: 8
+    hash_bucket_size: 200
+  type: category
+f19:
+  embedding_dim: auto
+  parameter:
+    embedding_dim: 8
+    hash_bucket_size: 40
+  type: category
+f2:
+  parameter:
+    boundaries: null
+    mean: 110.86
+    std: 443.46
+  type: continuous
+f20:
+  embedding_dim: auto
+  parameter:
+    embedding_dim: 8
+    hash_bucket_size: 7000
+  type: category
+f21:
+  embedding_dim: auto
+  parameter:
+    embedding_dim: 8
+    hash_bucket_size: 300
+  type: category
+f22:
+  embedding_dim: auto
+  parameter:
+    embedding_dim: 8
+    hash_bucket_size: 20
+  type: category
+f23:
+  embedding_dim: auto
+  parameter:
+    embedding_dim: 8
+    hash_bucket_size: 6000
+  type: category
+f24:
+  embedding_dim: auto
+  parameter:
+    embedding_dim: 8
+    hash_bucket_size: 5000
+  type: category
+f25:
+  embedding_dim: auto
+  parameter:
+    embedding_dim: 8
+    hash_bucket_size: 20000
+  type: category
+f26:
+  embedding_dim: auto
+  parameter:
+    embedding_dim: 8
+    hash_bucket_size: 4000
+  type: category
+f27:
+  embedding_dim: auto
+  parameter:
+    embedding_dim: 8
+    hash_bucket_size: 80
+  type: category
+f28:
+  embedding_dim: auto
+  parameter:
+    embedding_dim: 8
+    hash_bucket_size: 5000
+  type: category
+f29:
+  embedding_dim: auto
+  parameter:
+    embedding_dim: 8
+    hash_bucket_size: 10000
+  type: category
+f3:
+  parameter:
+    boundaries: null
+    mean: 37.39
+    std: 797.92
+  type: continuous
+f30:
+  embedding_dim: auto
+  parameter:
+    embedding_dim: 8
+    hash_bucket_size: 40
+  type: category
+f31:
+  embedding_dim: auto
+  parameter:
+    embedding_dim: 8
+    hash_bucket_size: 3000
+  type: category
+f32:
+  embedding_dim: auto
+  parameter:
+    embedding_dim: 8
+    hash_bucket_size: 2000
+  type: category
+f33:
+  embedding_dim: auto
+  parameter:
+    embedding_dim: 8
+    hash_bucket_size: 20
+  type: category
+f34:
+  embedding_dim: auto
+  parameter:
+    embedding_dim: 8
+    hash_bucket_size: 20000
+  type: category
+f35:
+  embedding_dim: auto
+  parameter:
+    embedding_dim: 8
+    hash_bucket_size: 40
+  type: category
+f36:
+  embedding_dim: auto
+  parameter:
+    embedding_dim: 8
+    hash_bucket_size: 40
+  type: category
+f37:
+  embedding_dim: auto
+  parameter:
+    embedding_dim: 8
+    hash_bucket_size: 6000
+  type: category
+f38:
+  embedding_dim: auto
+  parameter:
+    embedding_dim: 8
+    hash_bucket_size: 200
+  type: category
+f39:
+  embedding_dim: auto
+  parameter:
+    embedding_dim: 8
+    hash_bucket_size: 4000
+  type: category
+f4:
+  parameter:
+    boundaries: null
+    mean: 6.43
+    std: 10.38
+  type: continuous
+f5:
+  parameter:
+    boundaries: null
+    mean: 16238.4
+    std: 61112.65
+  type: continuous
+f6:
+  parameter:
+    boundaries: null
+    mean: 107.39
+    std: 322.41
+  type: continuous
+f7:
+  parameter:
+    boundaries: null
+    mean: 13.81
+    std: 51.36
+  type: continuous
+f8:
+  parameter:
+    boundaries: null
+    mean: 13.07
+    std: 17.56
+  type: continuous
+f9:
+  parameter:
+    boundaries: null
+    mean: 118.54
+    std: 271.81
+  type: continuous

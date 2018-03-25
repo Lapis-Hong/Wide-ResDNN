@@ -15,5 +15,5 @@ num_features=`head -1 ${file} | awk -F '\t' '{print NF}'`
 #for i in {1..39}
 for((i=1;i<=${num_features};i++));
 do
-    echo -e "${i}\t`cut -f ${i} ${file} | sort -u|wc -l`"
+    echo -e "`cut -f ${i} ${file} | sort -u|wc -l`"
 done
