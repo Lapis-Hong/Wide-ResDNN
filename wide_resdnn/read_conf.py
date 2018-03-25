@@ -8,7 +8,7 @@ import yaml
 
 
 BASE_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'conf')
-FEATURE_CONF_FILE = 'feature_basic.yaml'
+FEATURE_CONF_FILE = 'feature.basic.yaml'
 MODEL_CONF_FILE = 'model.yaml'
 TRAIN_CONF_FILE = 'train.yaml'
 
