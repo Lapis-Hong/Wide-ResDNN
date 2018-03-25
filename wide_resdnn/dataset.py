@@ -36,7 +36,7 @@ def input_fn(data_file, num_epochs, batch_size, shuffle=True):
 
     def _parse_csv(value):  # value: Tensor("arg0:0", shape=(), dtype=string)
         tf.logging.info('Parsing input files: {}'.format(data_file))
-        columns = tf.decode_csv(value, record_defaults=_CSV_COLUMN_DEFAULTS, field_delim='\t')
+        columns = tf.decode_csv(value, record_defaults=_CSV_COLUMN_DEFAULTS, field_delim='\t', na_value='')
         features = dict(zip(_CSV_COLUMNS, columns))
         labels = features.pop('clicked')
         return features, tf.equal(labels, 1)
