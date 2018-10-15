@@ -8,19 +8,19 @@
 # 3. parameter: main parameter for tf.feature_column according to feature type.
 
 #    (1) type: category
-#         using `tf.feature.categorical_column_with_hash_bucket` for category feature
-#         parameter:
-#           hash_bucket_size: required, eg: 1000
-#           embedding dim: optional, set empty to not use category feature for deep input;
+#          using `tf.feature.categorical_column_with_hash_bucket` for category feature
+#        parameter:
+#          hash_bucket_size: required, eg: 1000
+#          embedding dim: optional, set empty to not use category feature for deep input;
 #                            set positive integer to embedding category feature for deep using tf.feature.embedding_column;
 #                            set `auto` to use empirical formula to calculate embedding dim.
 #    (2) type: continuous
-#           using `tf.feature_column.numeric_column` for continuous feature
-#           parameter:
-#             mean: optional, set both mean and std to do standard normalization.
-#             std: optional
-#             boundaries: optional, set empty to not use continuous feature for wide input;
-#                           set boundaries to discretize continuous feature for wide input using tf.feature_column.bucketized_column
+#          using `tf.feature_column.numeric_column` for continuous feature
+#        parameter:
+#          mean: optional, set both mean and std to do standard normalization.
+#          std: optional
+#          boundaries: optional, set empty to not use continuous feature for wide input;
+#                      set boundaries to discretize continuous feature for wide input using tf.feature_column.bucketized_column
 
 # Q & A about hash_bucket_size:
 # If category size=1000, how much should hash_bucket_size be ?

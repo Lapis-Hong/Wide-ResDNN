@@ -2,9 +2,11 @@
 # -*- coding: utf-8 -*-
 # @Author: lapis-hong
 # @Date  : 2018/1/15
+"""This module for building estimator for tf.estimators API."""
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
+from __future__ import unicode_literals
 
 import json
 import os
@@ -24,51 +26,45 @@ numeric_column = tf.feature_column.numeric_column
 embedding_column = tf.feature_column.embedding_column
 
 
+def _embed_dim(dim):
+    """Empirical embedding dim"""
+    return int(np.power(2, np.ceil(np.log(dim ** 0.25))))
+
+
 def _build_model_columns():
     """
     Build wide and deep feature columns.
         wide_columns: category features + [discretized continuous features]
-        deep_columns: continuous features + [embedding category features]
-    Return: _CategoricalColumn and __DenseColumn in tf.estimators API
+        deep_columns: continuous features + [embedded category features]
+    Return: 
+        _CategoricalColumn and _DenseColumn in tf.estimators API
     """
-    feature_conf_dic = Config().read_feature_conf()
-
-    def embed_dim(dim):
-        """empirical embedding dim"""
-        return int(np.power(2, np.ceil(np.log(dim**0.25))))
+    feature_conf_dic = Config().feature
     tf.logging.info('Total feature classes: {}'.format(len(feature_conf_dic)))
 
-    wide_columns = []
-    deep_columns = []
-    wide_dim = 0
-    deep_dim = 0
+    wide_columns, deep_columns = [], []
+    wide_dim, deep_dim = 0, 0
     for feature, conf in feature_conf_dic.items():
         f_type, f_param = conf["type"], conf["parameter"]
-        if f_type == 'category':
+        if f_type == 'category':  # category features
                 hash_bucket_size, embedding_dim = f_param['hash_bucket_size'], f_param["embedding_dim"]
-                col = categorical_column_with_hash_bucket(feature,
-                    hash_bucket_size=hash_bucket_size)
+                col = categorical_column_with_hash_bucket(feature, hash_bucket_size=hash_bucket_size)
                 wide_columns.append(col)
                 wide_dim += hash_bucket_size
                 if embedding_dim:  # embedding category feature for deep input
-                    if isinstance(embedding_dim, str):
-                        embedding_dim = embed_dim(hash_bucket_size)
-                    deep_columns.append(embedding_column(col,
-                         dimension=embedding_dim,
-                         combiner='mean'))
+                    if isinstance(embedding_dim, str):  # auto set embedding dim
+                        embedding_dim = _embed_dim(hash_bucket_size)
+                    deep_columns.append(embedding_column(col, dimension=embedding_dim, combiner='mean'))
                     deep_dim += embedding_dim
-        else:
+        else:  # continuous features
             mean, std, boundaries = f_param["mean"] or 0, f_param["std"] or 1, f_param["boundaries"]
-            col = numeric_column(feature,
-                 shape=(1,),
-                 default_value=None,
-                 dtype=tf.float32,
-                 normalizer_fn=None) #lambda x: (x - tf.constant(mean, tf.float32)) / tf.constant(std, tf.float32))
+            col = numeric_column(feature, shape=(1,), default_value=None, dtype=tf.float32, normalizer_fn=lambda x: (x - mean) / std)
             deep_columns.append(col)
             deep_dim += 1
             if boundaries:
                 wide_columns.append(bucketized_column(col, boundaries=boundaries))
                 wide_dim += (len(f_param)+1)
+
     # add columns logging info
     tf.logging.info('Build total {} wide columns'.format(len(wide_columns)))
     for col in wide_columns:
@@ -78,6 +74,7 @@ def _build_model_columns():
         tf.logging.debug('Deep columns: {}'.format(col))
     tf.logging.info('Wide input dimension is: {}'.format(wide_dim))
     tf.logging.info('Deep input dimension is: {}'.format(deep_dim))
+
     return wide_columns, deep_columns
 
 
@@ -212,6 +209,4 @@ if __name__ == '__main__':
     # print(model.params)  # {}
     # print(model.get_variable_names())
     # print(model.get_variable_value('dnn/hiddenlayer_0/bias'))
-    # print(model.get_variable_value('dnn/hiddenlayer_0/bias/Adagrad'))
-    # print(model.get_variable_value('dnn/hiddenlayer_0/kernel'))
     # print(model.latest_checkpoint())  # another 4 method is export_savedmodel,train evaluate predict

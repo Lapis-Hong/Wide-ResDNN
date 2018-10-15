@@ -23,7 +23,12 @@ from wide_resdnn.util import elapse_time
 
 CONFIG = Config().train
 parser = argparse.ArgumentParser(description='Train Wide and Deep Model.')
-
+parser.add_argument(
+    '--train_data', type=str, default=CONFIG["train_data"],
+    help='Path to the train data.')
+parser.add_argument(
+    '--test_data', type=str, default=CONFIG["test_data"],
+    help='Path to the test data.')
 parser.add_argument(
     '--model_dir', type=str, default=CONFIG["model_dir"],
     help='Base directory for the model.')
@@ -39,12 +44,6 @@ parser.add_argument(
 parser.add_argument(
     '--batch_size', type=int, default=CONFIG["batch_size"],
     help='Number of examples per batch.')
-parser.add_argument(
-    '--train_data', type=str, default=CONFIG["train_data"],
-    help='Path to the train data.')
-parser.add_argument(
-    '--test_data', type=str, default=CONFIG["test_data"],
-    help='Path to the test data.')
 parser.add_argument(
     '--keep_train', type=int, default=CONFIG["keep_train"],
     help='Whether to keep training on previous trained model.')
@@ -87,8 +86,8 @@ def train_and_eval(model):
 
 
 def main(_):
-    print("Using TensorFlow version %s" % tf.__version__)
-    assert "1.4" <= tf.__version__, "Need TensorFlow r1.4 or later."
+    print("Using TensorFlow version %s, neee TensorFlow 1.4 or later." % tf.__version__)
+    # assert "1.4" <= tf.__version__, "Need TensorFlow r1.4 or later."
     CONFIG = Config()
     print('Model type: {}'.format(FLAGS.model_type))
     model_dir = os.path.join(FLAGS.model_dir, FLAGS.model_type)

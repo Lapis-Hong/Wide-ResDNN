@@ -10,8 +10,8 @@
 train:
   model_dir: model
   model_type: wide_deep
-  train_data: ./data/sample.train
-  test_data: ./data/eval/sample.test
+  train_data: data/criteo/train.txt
+  test_data: data/criteo/test.txt
   train_epochs: 5
   epochs_per_eval: 1
   batch_size: 32

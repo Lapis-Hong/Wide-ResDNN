@@ -1,4 +1,5 @@
 # Model Parameter Configuration
+# TODO: learning rate decay
 
 # Wide Parameters
 ## optimizer: one of {'`Adagrad`, `Adam`, `Ftrl`, `RMSProp`, `SGD`}

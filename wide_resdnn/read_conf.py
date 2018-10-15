@@ -3,11 +3,13 @@
 # @Author: lapis-hong
 # @Date  : 2018/1/24
 """Read All Configuration from ../conf/*.yaml"""
+from __future__ import unicode_literals
+
 import os
 import yaml
 
-
-BASE_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'conf')
+# Yaml config file path
+BASE_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'conf/criteo')
 FEATURE_CONF_FILE = 'feature.basic.yaml'
 MODEL_CONF_FILE = 'model.yaml'
 TRAIN_CONF_FILE = 'train.yaml'
@@ -61,7 +63,7 @@ class Config(object):
                         raise TypeError('boundaries parameter element must be integer or float,'
                                         'found `{}` for feature `{}` in feature conf.'.format(boundaries, feature))
 
-    def read_feature_conf(self):
+    def _read_feature_conf(self):
         with open(self._feature_conf_file) as f:
             feature_conf = yaml.load(f)
             for feature, conf in feature_conf.items():
@@ -76,6 +78,14 @@ class Config(object):
     def _read_train_conf(self):
         with open(self._train_conf_file) as f:
             return yaml.load(f)
+
+    @property
+    def feature(self):
+        return self._read_feature_conf()
+
+    @property
+    def num_features(self):
+        return len(self._read_feature_conf().keys())
 
     @property
     def config(self):
@@ -98,7 +108,14 @@ class Config(object):
         return self._read_model_conf()
 
 if __name__ == '__main__':
-    print(Config().read_feature_conf())
+    print(Config().feature)
+    print(Config().num_features)
+    print(Config().config)
+    print(Config().train)
+    print(Config().distribution)
+    print(Config().runconfig)
+    print(Config().model)
+
 
 
 

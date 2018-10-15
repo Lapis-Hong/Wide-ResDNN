@@ -10,7 +10,8 @@ The **wide model** is able to memorize interactions with data with a large numbe
 The code is based on the TensorFlow wide and deep tutorial with high level `tf.estimator.Estimator` API. 
 
 ## Dataset
-Kaggle Criteo Dataset for ctr predcition. 
+1. Kaggle Criteo Dataset for ctr prediction. 
+2. Kaggle Avazu Dataset for ctr prediction
 
 # Data fields
 Label - Target variable that indicates if an ad was clicked (1) or not (0).

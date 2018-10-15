@@ -29,39 +29,33 @@ f13:
     std: 18.48
   type: continuous
 f14:
-  embedding_dim: auto
   parameter:
-    embedding_dim: 8
+    embedding_dim: auto
     hash_bucket_size: 600
   type: category
 f15:
-  embedding_dim: auto
   parameter:
-    embedding_dim: 8
+    embedding_dim: auto
     hash_bucket_size: 2000
   type: category
 f16:
-  embedding_dim: auto
   parameter:
-    embedding_dim: 8
+    embedding_dim: auto
     hash_bucket_size: 20000
   type: category
 f17:
-  embedding_dim: auto
   parameter:
-    embedding_dim: 8
+    embedding_dim: auto
     hash_bucket_size: 9000
   type: category
 f18:
-  embedding_dim: auto
   parameter:
-    embedding_dim: 8
+    embedding_dim: auto
     hash_bucket_size: 200
   type: category
 f19:
-  embedding_dim: auto
   parameter:
-    embedding_dim: 8
+    embedding_dim: auto
     hash_bucket_size: 40
   type: category
 f2:
@@ -71,63 +65,53 @@ f2:
     std: 443.46
   type: continuous
 f20:
-  embedding_dim: auto
   parameter:
-    embedding_dim: 8
+    embedding_dim: auto
     hash_bucket_size: 7000
   type: category
 f21:
-  embedding_dim: auto
   parameter:
-    embedding_dim: 8
+    embedding_dim: auto
     hash_bucket_size: 300
   type: category
 f22:
-  embedding_dim: auto
   parameter:
-    embedding_dim: 8
+    embedding_dim: auto
     hash_bucket_size: 20
   type: category
 f23:
-  embedding_dim: auto
   parameter:
-    embedding_dim: 8
+    embedding_dim: auto
     hash_bucket_size: 6000
   type: category
 f24:
-  embedding_dim: auto
   parameter:
-    embedding_dim: 8
+    embedding_dim: auto
     hash_bucket_size: 5000
   type: category
 f25:
-  embedding_dim: auto
   parameter:
-    embedding_dim: 8
+    embedding_dim: auto
     hash_bucket_size: 20000
   type: category
 f26:
-  embedding_dim: auto
   parameter:
-    embedding_dim: 8
+    embedding_dim: auto
     hash_bucket_size: 4000
   type: category
 f27:
-  embedding_dim: auto
   parameter:
-    embedding_dim: 8
+    embedding_dim: auto
     hash_bucket_size: 80
   type: category
 f28:
-  embedding_dim: auto
   parameter:
-    embedding_dim: 8
+    embedding_dim: auto
     hash_bucket_size: 5000
   type: category
 f29:
-  embedding_dim: auto
   parameter:
-    embedding_dim: 8
+    embedding_dim: auto
     hash_bucket_size: 10000
   type: category
 f3:
@@ -137,63 +121,53 @@ f3:
     std: 797.92
   type: continuous
 f30:
-  embedding_dim: auto
   parameter:
-    embedding_dim: 8
+    embedding_dim: auto
     hash_bucket_size: 40
   type: category
 f31:
-  embedding_dim: auto
   parameter:
-    embedding_dim: 8
+    embedding_dim: auto
     hash_bucket_size: 3000
   type: category
 f32:
-  embedding_dim: auto
   parameter:
-    embedding_dim: 8
+    embedding_dim: auto
     hash_bucket_size: 2000
   type: category
 f33:
-  embedding_dim: auto
   parameter:
-    embedding_dim: 8
+    embedding_dim: auto
     hash_bucket_size: 20
   type: category
 f34:
-  embedding_dim: auto
   parameter:
-    embedding_dim: 8
+    embedding_dim: auto
     hash_bucket_size: 20000
   type: category
 f35:
-  embedding_dim: auto
   parameter:
-    embedding_dim: 8
+    embedding_dim: auto
     hash_bucket_size: 40
   type: category
 f36:
-  embedding_dim: auto
   parameter:
-    embedding_dim: 8
+    embedding_dim: auto
     hash_bucket_size: 40
   type: category
 f37:
-  embedding_dim: auto
   parameter:
-    embedding_dim: 8
+    embedding_dim: auto
     hash_bucket_size: 6000
   type: category
 f38:
-  embedding_dim: auto
   parameter:
-    embedding_dim: 8
+    embedding_dim: auto
     hash_bucket_size: 200
   type: category
 f39:
-  embedding_dim: auto
   parameter:
-    embedding_dim: 8
+    embedding_dim: auto
     hash_bucket_size: 4000
   type: category
 f4:
