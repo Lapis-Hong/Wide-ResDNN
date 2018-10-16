@@ -3,7 +3,8 @@
 # @Author: lapis-hong
 # @Date  : 2018/3/25
 """Auto update feature dynamic config for feature.advance.yaml using feat_val_cnt.txt and mean_std.txt results"""
-from collections import OrderedDict
+from __future__ import unicode_literals
+
 import yaml
 
 feat_val_cnt_file = '../conf/feat_val_cnt.txt'

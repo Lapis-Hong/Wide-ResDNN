@@ -15,7 +15,7 @@ import time
 
 import tensorflow as tf
 
-from wide_resdnn.build_estimator import build_estimator, build_custom_estimator
+from wide_resdnn.build_estimator import build_estimator
 from wide_resdnn.dataset import input_fn
 from wide_resdnn.read_conf import Config
 from wide_resdnn.util import elapse_time
@@ -51,7 +51,7 @@ def main(_):
     model_dir = os.path.join(FLAGS.model_dir, FLAGS.model_type)
     print('Model directory: {}'.format(model_dir))
 
-    model = build_custom_estimator(model_dir, FLAGS.model_type)
+    model = build_estimator(model_dir, FLAGS.model_type)
     tf.logging.info('Build estimator: {}'.format(model))
 
     tf.logging.info('='*30+' START TESTING'+'='*30)

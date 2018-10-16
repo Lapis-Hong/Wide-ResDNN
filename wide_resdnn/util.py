@@ -16,7 +16,7 @@ import tensorflow as tf
 
 
 def timer(info=''):
-    """parameter decarotor"""
+    """parameter decorator"""
     def _timer(func):
         @wraps(func)
         def wrapper(*args, **kwargs):  # passing params to func

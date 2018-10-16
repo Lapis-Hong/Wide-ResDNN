@@ -106,8 +106,67 @@ def _build_distribution():
             assert not run_config.is_chief
 
 
+# def build_estimator(model_dir, model_type):
+#     """Build an estimator appropriate for the given model type."""
+#     runconfig = Config().runconfig
+#     conf = Config().model
+#     wide_columns, deep_columns = _build_model_columns()
+#     _build_distribution()
+#     # Create a tf.estimator.RunConfig to ensure the model is run on CPU, which
+#     # trains faster than GPU for this model.
+#     run_config = tf.estimator.RunConfig(**runconfig).replace(
+#         session_config=tf.ConfigProto(device_count={'GPU': 0}))
+#
+#     if model_type == 'wide':
+#         return tf.estimator.LinearClassifier(
+#             model_dir=model_dir,
+#             feature_columns=wide_columns,
+#             weight_column=None,
+#             optimizer=tf.train.FtrlOptimizer(
+#                 learning_rate=conf["wide_learning_rate"],
+#                 l1_regularization_strength=conf["wide_l1"],
+#                 l2_regularization_strength=conf["wide_l2"]),
+#             partitioner=None,
+#             config=run_config)
+#     elif model_type == 'deep':
+#         return tf.estimator.DNNClassifier(
+#             model_dir=model_dir,
+#             feature_columns=deep_columns,
+#             hidden_units=conf["hidden_units"],
+#             optimizer=tf.train.ProximalAdagradOptimizer(
+#                 learning_rate=conf["deep_learning_rate"],
+#                 l1_regularization_strength=conf["deep_l1"],
+#                 l2_regularization_strength=conf["deep_l2"]),
+#             activation_fn=eval(conf["activation_function"]),
+#             dropout=conf["dropout"],
+#             weight_column=None,
+#             input_layer_partitioner=None,
+#             config=run_config)
+#     else:
+#         return tf.estimator.DNNLinearCombinedClassifier(
+#             model_dir=model_dir,  # self._model_dir = model_dir or self._config.model_dir
+#             linear_feature_columns=wide_columns,
+#             linear_optimizer=tf.train.FtrlOptimizer(
+#                 learning_rate=conf["wide_learning_rate"],
+#                 l1_regularization_strength=conf["wide_l1"],
+#                 l2_regularization_strength=conf["wide_l2"]),
+#             dnn_feature_columns=deep_columns,
+#             dnn_optimizer=tf.train.ProximalAdagradOptimizer(
+#                 learning_rate=conf["deep_learning_rate"],
+#                 l1_regularization_strength=conf["deep_l1"],
+#                 l2_regularization_strength=conf["deep_l2"]),
+#             dnn_hidden_units=conf["hidden_units"],
+#             dnn_activation_fn=eval(conf["activation_function"]),
+#             dnn_dropout=conf["dropout"],
+#             n_classes=2,
+#             weight_column=None,
+#             label_vocabulary=None,
+#             input_layer_partitioner=None,
+#             config=run_config)
+
+
 def build_estimator(model_dir, model_type):
-    """Build an estimator appropriate for the given model type."""
+    """Build an estimator for wide & resdnn model."""
     runconfig = Config().runconfig
     conf = Config().model
     wide_columns, deep_columns = _build_model_columns()
@@ -117,63 +176,11 @@ def build_estimator(model_dir, model_type):
     run_config = tf.estimator.RunConfig(**runconfig).replace(
         session_config=tf.ConfigProto(device_count={'GPU': 0}))
 
-    if model_type == 'wide':
-        return tf.estimator.LinearClassifier(
-            model_dir=model_dir,
-            feature_columns=wide_columns,
-            weight_column=None,
-            optimizer=tf.train.FtrlOptimizer(
-                learning_rate=conf["wide_learning_rate"],
-                l1_regularization_strength=conf["wide_l1"],
-                l2_regularization_strength=conf["wide_l2"]),
-            partitioner=None,
-            config=run_config)
-    elif model_type == 'deep':
-        return tf.estimator.DNNClassifier(
-            model_dir=model_dir,
-            feature_columns=deep_columns,
-            hidden_units=conf["hidden_units"],
-            optimizer=tf.train.ProximalAdagradOptimizer(
-                learning_rate=conf["deep_learning_rate"],
-                l1_regularization_strength=conf["deep_l1"],
-                l2_regularization_strength=conf["deep_l2"]),
-            activation_fn=eval(conf["activation_function"]),
-            dropout=conf["dropout"],
-            weight_column=None,
-            input_layer_partitioner=None,
-            config=run_config)
-    else:
-        return tf.estimator.DNNLinearCombinedClassifier(
-            model_dir=model_dir,  # self._model_dir = model_dir or self._config.model_dir
-            linear_feature_columns=wide_columns,
-            linear_optimizer=tf.train.FtrlOptimizer(
-                learning_rate=conf["wide_learning_rate"],
-                l1_regularization_strength=conf["wide_l1"],
-                l2_regularization_strength=conf["wide_l2"]),
-            dnn_feature_columns=deep_columns,
-            dnn_optimizer=tf.train.ProximalAdagradOptimizer(
-                learning_rate=conf["deep_learning_rate"],
-                l1_regularization_strength=conf["deep_l1"],
-                l2_regularization_strength=conf["deep_l2"]),
-            dnn_hidden_units=conf["hidden_units"],
-            dnn_activation_fn=eval(conf["activation_function"]),
-            dnn_dropout=conf["dropout"],
-            n_classes=2,
-            weight_column=None,
-            label_vocabulary=None,
-            input_layer_partitioner=None,
-            config=run_config)
-
-
-def build_custom_estimator(model_dir, model_type):
-    runconfig = Config().runconfig
-    conf = Config().model
-    wide_columns, deep_columns = _build_model_columns()
-    _build_distribution()
-    # Create a tf.estimator.RunConfig to ensure the model is run on CPU, which
-    # trains faster than GPU for this model.
-    run_config = tf.estimator.RunConfig(**runconfig).replace(
-        session_config=tf.ConfigProto(device_count={'GPU': 0}))
+    # learning_rate = tf.train.exponential_decay(
+    #     learning_rate=0.1,
+    #     global_step=tf.train.get_global_step(),
+    #     decay_steps=10000,
+    #     decay_rate=0.96)
 
     return WideAndDeepClassifier(
         model_type=model_type,
@@ -189,7 +196,8 @@ def build_custom_estimator(model_dir, model_type):
                 l1_regularization_strength=conf["deep_l1"],
                 l2_regularization_strength=conf["deep_l2"]),
         dnn_hidden_units=conf["hidden_units"],
-        dnn_connected_mode=conf["connected_mode"],
+        dnn_connect_mode=conf["connect_mode"],
+        dnn_residual_mode=conf["residual_mode"],
         dnn_activation_fn=eval(conf["activation_function"]),
         dnn_dropout=conf["dropout"],
         dnn_batch_norm=True,
@@ -202,7 +210,6 @@ def build_custom_estimator(model_dir, model_type):
 if __name__ == '__main__':
     tf.logging.set_verbosity(tf.logging.DEBUG)
     model = build_estimator('./model', 'wide_deep')
-    model = build_custom_estimator('./model', 'wide_deep')
     # print(model.config)  # <tensorflow.python.estimator.run_config.RunConfig object at 0x118de4e10>
     # print(model.model_dir)  # ./model
     # print(model.model_fn)  # <function public_model_fn at 0x118de7b18>

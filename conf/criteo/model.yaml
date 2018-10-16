@@ -1,9 +1,6 @@
 # Model Parameter Configuration
-# TODO: learning rate decay
 
 # Wide Parameters
-## optimizer: one of {'`Adagrad`, `Adam`, `Ftrl`, `RMSProp`, `SGD`}
-#wide_optimizer: 'Ftrl'
 wide_learning_rate: 0.1
 # regularization parameters, optional
 wide_l1: 0.5
@@ -11,31 +8,35 @@ wide_l2: 1
 
 
 # Deep Parameters
-# connected_mode: one of {`simple`, `first_dense`, `last_dense`, `dense`, `resnet`}
-#                 or arbitrary connections index tuples.
-#   1. `simple`: normal dnn architecture.
+# hidden_units: List of each hidden layer units, set nested list for Multi DNN.
+# connect_mode: one of {`normal`, `first_dense`, `last_dense`, `dense`, `resnet`} or arbitrary connections
+#   1. `normal`: normal DNN with no residual connections.
 #   2. `first_dense`: add addition connections from first input layer to all hidden layers.
 #   3. `last_dense`: add addition connections from all previous layers to last layer.
 #   4. `dense`: add addition connections between all layers, similar to DenseNet.
 #   5. `resnet`: add addition connections between adjacent layers, similar to ResNet.
 #   6. arbitrary connections list: add addition connections from layer_0 to layer_1 like 0-1.
 #      eg: [0-1,0-3,1-2]  index start from zero(input_layer), max index is len(hidden_units), smaller index first.
+# residual_mode: one of `add` or `concat`, must be set when connect_mode is not `normal`
 
-# to use multi dnn model, set nested hidden_units, eg: [[1024,512,256], [512,256]]
-# connected_mode can be set different for each dnn eg: ['simple', 'dense'] or use same mode if only set 'simple'
-# only above 2 network architecture parameters can be different, other parameters are same for multi dnn model.
+# To use multi dnn model, set nested hidden_units, list connect_mode, list residual_mode
+# Examples:
+# hidden_units: [[1024, 12,256], [512,256]]
+# connect_mode: [normal, dense]
+# residual_mode: [add, concat]
 
 # network architecture
 hidden_units: [1024,512,256]
-connected_mode: 'simple'
-#deep_optimizer: 'Adagrad'
+connect_mode: normat
+residual_mode: concat
+
 deep_learning_rate: 0.1
-activation_function: 'tf.nn.relu'
+activation_function: tf.nn.relu
 # regularization parameters, optional, set empty to be default None
 deep_l1: 0.01
 deep_l2: 0.01
 dropout:
-batch_normalization: 1 # bool
+batch_normalization: true
 
 
 

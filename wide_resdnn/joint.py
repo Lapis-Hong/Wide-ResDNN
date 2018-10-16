@@ -3,23 +3,20 @@
 # @Author: lapis-hong
 # @Date  : 2018/2/7
 """
-TensorFlow Custom Estimators for Wide and Deep Joint Training Models.
+TensorFlow Custom Estimators for Wide and ResDNN Joint Training Models.
+This is a more general and flexible framework than Wide & Deep Learning, 
+which can use residual connections or arbitrary connections, even with Multi DNN 
+instead of a single plain DNN.
 
 There are two ways to build custom estimator.
-    1. Write model_fn function to pass to `tf.estimator.Estimator` to generate an instance.
-       easier to build but with less flexibility. 
+    1. Write model_fn function to pass `tf.estimator.Estimator` to generate an instance.
+        easier to build but with less flexibility. 
     2. Write subclass of `tf.estimator.Estimator` like premade(canned) estimators.
-       much suitable for official project. 
+        much suitable for official project. 
 
 This module is based on tf.estimator.DNNLinearCombinedClassifier.
-It merges `wide`, `deep`, `wide_deep` three types model into one class 
+It combines `wide`, `deep`, `wide_deep` three types model into one class 
 `WideAndDeepClassifier` by argument model_type 
-It is a flexible and general joint learning framework.
-
-Currently extensions:
-    1. add BN layer options 
-    2. arbitrary connections between layers (refer to ResNet and DenseNet)
-    3. add Cnn as deep part 
 """
 from __future__ import absolute_import
 from __future__ import division
@@ -34,45 +31,27 @@ from wide_resdnn.linear import linear_learning_rate, linear_logit_fn_builder
 from wide_resdnn.dnn import multidnn_logit_fn_builder
 from wide_resdnn.util import add_layer_summary, _check_no_sync_replicas_optimizer, get_optimizer_instance
 
-# original import source
-# from tensorflow.python.estimator import estimator
-# from tensorflow.python.estimator.canned import dnn
-# from tensorflow.python.estimator.canned import head as head_lib
-# from tensorflow.python.estimator.canned import linear
-# from tensorflow.python.estimator.canned import optimizers
-# from tensorflow.python.framework import ops
-# from tensorflow.python.ops import control_flow_ops
-# from tensorflow.python.ops import nn
-# from tensorflow.python.ops import partitioned_variables
-# from tensorflow.python.ops import state_ops
-# from tensorflow.python.ops import variable_scope
-# from tensorflow.python.summary import summary
-# from tensorflow.python.training import sync_replicas_optimizer
-# from tensorflow.python.training import training_util
-
 # The default learning rates are a historical artifact of the initial implementation.
-_DNN_LEARNING_RATE = 0.001  # 0.05
+_DNN_LEARNING_RATE = 0.001
 _LINEAR_LEARNING_RATE = 0.005
-_CNN_LEARNING_RATE = 0.01
 
 
 def _wide_deep_combined_model_fn(
         features, labels, mode, head,
         model_type,
-        with_cnn=False,
-        cnn_optimizer='Adagrad',
         linear_feature_columns=None,
         linear_optimizer='Ftrl',
         dnn_feature_columns=None,
         dnn_optimizer='Adagrad',
         dnn_hidden_units=None,
-        dnn_connected_mode=None,
+        dnn_connect_mode=None,
+        dnn_residual_mode=None,
         dnn_activation_fn=tf.nn.relu,
         dnn_dropout=None,
         dnn_batch_norm=None,
         input_layer_partitioner=None,
         config=None):
-    """Wide and Deep combined model_fn. (Dnn, Cnn, Linear)
+    """Wide and Deep combined model_fn. (Linear, ResDNN)
     Args:
         features: dict of `Tensor`.
         labels: `Tensor` of shape [batch_size, 1] or [batch_size] labels of dtype
@@ -80,10 +59,6 @@ def _wide_deep_combined_model_fn(
       mode: Defines whether this is training, evaluation or prediction. See `ModeKeys`.
       head: A `Head` instance.
       model_type: one of `wide`, `deep`, `wide_deep`.
-      with_cnn: Bool, set True to combine image input featrues using cnn.
-      cnn_optimizer: String, `Optimizer` object, or callable that defines the
-        optimizer to use for training the CNN model. Defaults to the Adagrad
-        optimizer.
       linear_feature_columns: An iterable containing all the feature columns used
           by the Linear model.
       linear_optimizer: String, `Optimizer` object, or callable that defines the
@@ -94,8 +69,9 @@ def _wide_deep_combined_model_fn(
       dnn_optimizer: String, `Optimizer` object, or callable that defines the
         optimizer to use for training the DNN model. Defaults to the Adagrad
         optimizer.
-      dnn_hidden_units: List of hidden units per DNN layer.
-      dnn_connected_mode: List of connected mode.
+      dnn_hidden_units: List of hidden units per DNN layer, nested lists for Multi DNN.
+      dnn_connect_mode: String or list for connect mode, list for Multi DNN.
+      dnn_residual_mode: `add` or `concat`, list for Multi DNN.
       dnn_activation_fn: Activation function applied to each DNN layer. If `None`,
           will use `tf.nn.relu`.
       dnn_dropout: When not `None`, the probability we will drop out a given DNN
@@ -113,11 +89,6 @@ def _wide_deep_combined_model_fn(
     if not isinstance(features, dict):
         raise ValueError('features should be a dictionary of `Tensor`s. '
                          'Given type: {}'.format(type(features)))
-    if with_cnn:
-        try:
-            cnn_features = features.pop('image')  # separate image feature from input_fn
-        except KeyError:
-            raise ValueError('No input image features, must provide image features if use cnn.')
     num_ps_replicas = config.num_ps_replicas if config else 0
     input_layer_partitioner = input_layer_partitioner or (
         tf.min_max_variable_partitioner(max_partitions=num_ps_replicas,
@@ -139,7 +110,8 @@ def _wide_deep_combined_model_fn(
             dnn_logit_fn = multidnn_logit_fn_builder(
                 units=head.logits_dimension,
                 hidden_units_list=dnn_hidden_units,
-                connected_mode_list=dnn_connected_mode,
+                connect_mode_list=dnn_connect_mode,
+                residual_mode_list=dnn_residual_mode,
                 feature_columns=dnn_feature_columns,
                 activation_fn=dnn_activation_fn,
                 dropout=dnn_dropout,
@@ -212,71 +184,20 @@ def _wide_deep_combined_model_fn(
 
 
 class WideAndDeepClassifier(tf.estimator.Estimator):
-    """An estimator for TensorFlow Wide and Deep joined classification models.
-    Example:
-    ```python
-    numeric_feature = numeric_column(...)
-    categorical_column_a = categorical_column_with_hash_bucket(...)
-    categorical_column_b = categorical_column_with_hash_bucket(...)
-    categorical_feature_a_x_categorical_feature_b = crossed_column(...)
-    categorical_feature_a_emb = embedding_column(
-        categorical_column=categorical_feature_a, ...)
-    categorical_feature_b_emb = embedding_column(
-        categorical_id_column=categorical_feature_b, ...)
-    estimator = DNNLinearCombinedClassifier(
-        # wide settings
-        linear_feature_columns=[categorical_feature_a_x_categorical_feature_b],
-        linear_optimizer=tf.train.FtrlOptimizer(...),
-        # deep settings
-        dnn_feature_columns=[
-            categorical_feature_a_emb, categorical_feature_b_emb,
-            numeric_feature],
-        dnn_hidden_units=[1000, 500, 100],
-        dnn_optimizer=tf.train.ProximalAdagradOptimizer(...))
-    # To apply L1 and L2 regularization, you can set optimizers as follows:
-    tf.train.ProximalAdagradOptimizer(
-        learning_rate=0.1,
-        l1_regularization_strength=0.001,
-        l2_regularization_strength=0.001)
-    # It is same for FtrlOptimizer.
-    # Input builders
-    def input_fn_train: # returns x, y
-        pass
-    estimator.train(input_fn=input_fn_train, steps=100)
-    def input_fn_eval: # returns x, y
-        pass
-    metrics = estimator.evaluate(input_fn=input_fn_eval, steps=10)
-    def input_fn_predict: # returns x, None
-        pass
-    predictions = estimator.predict(input_fn=input_fn_predict)
-    ```
-    Input of `train` and `evaluate` should have following features,
-    otherwise there will be a `KeyError`:
-    * for each `column` in `dnn_feature_columns` + `linear_feature_columns`:
-      - if `column` is a `_CategoricalColumn`, a feature with `key=column.name`
-        whose `value` is a `SparseTensor`.
-      - if `column` is a `_WeightedCategoricalColumn`, two features: the first
-        with `key` the id column name, the second with `key` the weight column
-        name. Both features' `value` must be a `SparseTensor`.
-      - if `column` is a `_DenseColumn`, a feature with `key=column.name`
-        whose `value` is a `Tensor`.
-    Loss is calculated by using softmax cross entropy.
-    @compatibility(eager)
-    Estimators are not compatible with eager execution.
-    @end_compatibility
+    """An custom estimator for TensorFlow Wide and ResDNN joined classification models.
+    The usage and behavior is exactly same with tf.estimator.DNNLinearCombinedClassifier.
     """
 
     def __init__(self,
                  model_type=None,
                  model_dir=None,
-                 with_cnn=False,
-                 cnn_optimizer='Adagrad',
                  linear_feature_columns=None,
                  linear_optimizer='Ftrl',
                  dnn_feature_columns=None,
                  dnn_optimizer='Adagrad',
                  dnn_hidden_units=None,
-                 dnn_connected_mode=None,
+                 dnn_connect_mode=None,
+                 dnn_residual_mode=None,
                  dnn_activation_fn=tf.nn.relu,
                  dnn_dropout=None,
                  dnn_batch_norm=None,
@@ -302,6 +223,7 @@ class WideAndDeepClassifier(tf.estimator.Estimator):
                 the deep part of the model. Defaults to Adagrad optimizer.
             dnn_hidden_units: List of hidden units per layer. All layers are fully
                 connected.
+            dnn_residual_mode: `add` or `concat` residual connections.
             dnn_activation_fn: Activation function applied to each layer. If None,
                 will use `tf.nn.relu`.
             dnn_dropout: When not None, the probability we will drop out
@@ -364,12 +286,11 @@ class WideAndDeepClassifier(tf.estimator.Estimator):
                 mode=mode,
                 head=head,
                 model_type=model_type,
-                with_cnn=with_cnn,
-                cnn_optimizer=cnn_optimizer,
                 linear_feature_columns=linear_feature_columns,
                 linear_optimizer=linear_optimizer,
                 dnn_feature_columns=dnn_feature_columns,
-                dnn_connected_mode=dnn_connected_mode,
+                dnn_connect_mode=dnn_connect_mode,
+                dnn_residual_mode=dnn_residual_mode,
                 dnn_optimizer=dnn_optimizer,
                 dnn_hidden_units=dnn_hidden_units,
                 dnn_activation_fn=dnn_activation_fn,

@@ -2,8 +2,9 @@
 # -*- coding: utf-8 -*-
 # @Author: lapis-hong
 # @Date  : 2018/2/9
-"""This module is based on tf.estimator.LinearClassifier.
-linear logits builder for wide part"""
+"""This module contains linear logits builder for wide model part
+The code is based on tf.estimator.LinearClassifier.
+"""
 import math
 
 import tensorflow as tf
