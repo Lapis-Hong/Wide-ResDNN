@@ -2,6 +2,7 @@
 
 # Wide Parameters
 wide_learning_rate: 0.1
+wide_lr_decay: true
 # regularization parameters, optional
 wide_l1: 0.5
 wide_l2: 1
@@ -27,10 +28,11 @@ wide_l2: 1
 
 # network architecture
 hidden_units: [1024,512,256]
-connect_mode: normat
+connect_mode: normal
 residual_mode: concat
 
 deep_learning_rate: 0.1
+deep_lr_decay: false
 activation_function: tf.nn.relu
 # regularization parameters, optional, set empty to be default None
 deep_l1: 0.01

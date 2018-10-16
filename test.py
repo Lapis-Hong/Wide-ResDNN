@@ -45,8 +45,8 @@ parser.add_argument(
 
 
 def main(_):
-    print("Using TensorFlow version %s" % tf.__version__)
-    assert "1.4" <= tf.__version__, "TensorFlow r1.4 or later is needed"
+    print("Using TensorFlow version %s, neee TensorFlow 1.4 or later." % tf.__version__)
+    # assert "1.4" <= tf.__version__, "TensorFlow r1.4 or later is needed"
     print('Model type: {}'.format(FLAGS.model_type))
     model_dir = os.path.join(FLAGS.model_dir, FLAGS.model_type)
     print('Model directory: {}'.format(model_dir))

@@ -38,7 +38,8 @@ def _dnn_logit_fn(features, mode, model_id, units,
             MultiHead case, this should be the sum of all component Heads' logit
             dimensions.
         hidden_units: Iterable of integer number of hidden units per layer.
-        connect_mode: If None, use normal DNN with no residual connections, also support several patterns.
+        connect_mode: String or list, support several patterns.
+            `normal`: use normal DNN with no residual connections
             `first_dense`: add addition connections from first input layer to all hidden layers.
             `last_dense`: add addition connections from all previous layers to last layer.
             `dense`: add addition connections between all layers, similar to DenseNet.
@@ -64,7 +65,7 @@ def _dnn_logit_fn(features, mode, model_id, units,
     if len(set(hidden_units)) != 1 and residual_mode == "add":
         raise ValueError("Can not set `add` residual mode for different hidden units.")
     if isinstance(connect_mode, basestring):
-        assert connect_mode in {'simple', 'first_dense', 'lase_dense', 'dense', 'resnet'}, (
+        assert connect_mode in {'normal', 'first_dense', 'lase_dense', 'dense', 'resnet'}, (
             'Invalid connect mode: {}'.format(connect_mode))
 
     def residual_fn(nets, mode):
@@ -81,9 +82,8 @@ def _dnn_logit_fn(features, mode, model_id, units,
         net = tf.feature_column.input_layer(
             features=features,
             feature_columns=feature_columns)
-
     layers = [net]
-    # This is normal DNN architecture.
+
     for layer_id, num_hidden_units in enumerate(hidden_units):
         with tf.variable_scope(
                 'dnn_{}/hiddenlayer_{}'.format(model_id, layer_id), values=(net,)) as hidden_layer_scope:
@@ -98,33 +98,33 @@ def _dnn_logit_fn(features, mode, model_id, units,
             if batch_norm:
                 net = tf.layers.batch_normalization(net)  # add bn layer, it has been added in high version tf
 
-            if connect_mode:
+            # This is ResDNN architecture.
+            if connect_mode != 'normal':
                 if connect_mode == 'first_dense':
                     # This concat input features to each DNN layers
                     net = residual_fn([net, layers[0]], residual_mode)
                 elif connect_mode == 'last_dense':
                     if layer_id == len(hidden_units) - 1:
                         # This concat each DNN layers to final feature layer.
-                        net = residual_fn(layers, residual_mode)
+                        net = residual_fn([net, layers], residual_mode)
                 elif connect_mode == 'dense':
                     # This concat all layers between each other.
-                    net = residual_fn(layers, residual_mode)
+                    net = residual_fn([net, layers], residual_mode)
                 elif connect_mode == 'resnet':
                     # This concat previous layers in turn. eg: 0-1, 1-2, 2-3, ...
                     net = residual_fn([net, layers[-1]], residual_mode)
                 else:
                     # This is arbitrary connections, ['0-1','0-3','1-3'], small index layer first
                     connect_mode = [map(int, s.split('-')) for s in connect_mode]
-                    # map each layer index to its early connect layer index: {1: [0], 2: [1], 3: [0]}
-                    connected_map = {}
+                    # map each layer index to its previous connect layer index: {1: [0], 3: [0, 1]}
+                    connect_map = {}
                     for i, j in connect_mode:
-                        if j not in connected_map:
-                            connected_map[j] = [i]
+                        if j not in connect_map:
+                            connect_map[j] = [i]
                         else:
-                            connected_map[j] = connected_map[j].append(i)
-                    connect_layers = [net for idx, net in enumerate(layers) if idx in layers[layer_id + 1]]
-                    connect_layers.append(net)
-                    net = residual_fn(connect_layers, residual_mode)
+                            connect_map[j].append(i)
+                    previous_layers = [net for idx, net in enumerate(layers) if idx in connect_map[layer_id + 1]]
+                    net = residual_fn([net, previous_layers], residual_mode)
 
                 layers.append(net)
         add_layer_summary(net, hidden_layer_scope.name)

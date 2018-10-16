@@ -82,6 +82,8 @@ def get_optimizer_instance(opt, learning_rate=None):
             return _OPTIMIZER_CLS_NAMES[opt](learning_rate=learning_rate)
         raise ValueError('Unsupported optimizer name: {}. Supported names are: {}'.format(
             opt, tuple(sorted(six.iterkeys(_OPTIMIZER_CLS_NAMES)))))
+    if callable(opt):
+        opt = opt()
     if not isinstance(opt, tf.train.Optimizer):
         raise ValueError('The given object is not an Optimizer instance. Given: {}'.format(opt))
     return opt

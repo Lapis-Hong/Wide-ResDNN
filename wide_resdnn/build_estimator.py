@@ -163,6 +163,21 @@ def _build_distribution():
 #             label_vocabulary=None,
 #             input_layer_partitioner=None,
 #             config=run_config)
+def _build_opt(opt, lr, l1, l2, lr_decay):
+    if lr_decay:
+        return lambda: opt(
+            learning_rate=tf.train.exponential_decay(
+                learning_rate=lr,
+                global_step=tf.train.get_global_step(),
+                decay_steps=10000,
+                decay_rate=0.96),
+            l1_regularization_strength=l1,
+            l2_regularization_strength=l2)
+    else:
+        return opt(
+            learning_rate=lr,
+            l1_regularization_strength=l1,
+            l2_regularization_strength=l2)
 
 
 def build_estimator(model_dir, model_type):
@@ -176,31 +191,25 @@ def build_estimator(model_dir, model_type):
     run_config = tf.estimator.RunConfig(**runconfig).replace(
         session_config=tf.ConfigProto(device_count={'GPU': 0}))
 
-    # learning_rate = tf.train.exponential_decay(
-    #     learning_rate=0.1,
-    #     global_step=tf.train.get_global_step(),
-    #     decay_steps=10000,
-    #     decay_rate=0.96)
+    # Optimizer with regularization and learning rate decay.
+    wide_opt = _build_opt(
+        tf.train.FtrlOptimizer, conf["wide_learning_rate"], conf["wide_l1"], conf["wide_l2"], conf["wide_lr_decay"])
+    deep_opt = _build_opt(
+        tf.train.ProximalAdagradOptimizer, conf["deep_learning_rate"], conf["deep_l1"], conf["deep_l2"], conf["deep_lr_decay"])
 
     return WideAndDeepClassifier(
         model_type=model_type,
         model_dir=model_dir,
         linear_feature_columns=wide_columns,
-        linear_optimizer=tf.train.FtrlOptimizer(
-                learning_rate=conf["wide_learning_rate"],
-                l1_regularization_strength=conf["wide_l1"],
-                l2_regularization_strength=conf["wide_l2"]),
+        linear_optimizer=wide_opt,
         dnn_feature_columns=deep_columns,
-        dnn_optimizer=tf.train.ProximalAdagradOptimizer(
-                learning_rate=conf["deep_learning_rate"],
-                l1_regularization_strength=conf["deep_l1"],
-                l2_regularization_strength=conf["deep_l2"]),
+        dnn_optimizer=deep_opt,
         dnn_hidden_units=conf["hidden_units"],
         dnn_connect_mode=conf["connect_mode"],
         dnn_residual_mode=conf["residual_mode"],
         dnn_activation_fn=eval(conf["activation_function"]),
         dnn_dropout=conf["dropout"],
-        dnn_batch_norm=True,
+        dnn_batch_norm=conf["batch_normalization"],
         n_classes=2,
         weight_column=None,
         label_vocabulary=None,

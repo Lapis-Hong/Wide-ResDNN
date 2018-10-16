@@ -20,7 +20,8 @@ The **wide model** is able to memorize interactions with data with a large numbe
 The code is based on TensorFlow wide and deep tutorial with high level `tf.estimator.Estimator` API. 
 We use Kaggle Criteo and Avazu Dataset as examples.
 
-This project is still on progress... 
+This project is still on progress...
+
 
 ## Dataset
 1. Kaggle Criteo Dataset for ctr prediction. 
