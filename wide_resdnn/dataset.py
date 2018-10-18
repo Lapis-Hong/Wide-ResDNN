@@ -62,7 +62,7 @@ def input_fn(data_file, num_epochs, batch_size, shuffle=True, shuffle_buffer_siz
         dataset = dataset.shuffle(buffer_size=shuffle_buffer_size, seed=123)  # set of Tensor object
     # Use `Dataset.map()` to build a pair of a feature dictionary
     # and a label tensor for each example.
-    dataset = dataset.map(_parse_csv, num_parallel_calls=5).repeat(num_epochs).batch(batch_size)
+    dataset = dataset.map(_parse_csv, num_parallel_calls=16).repeat(num_epochs).batch(batch_size).prefetch(2*batch_size)
     return dataset.make_one_shot_iterator().get_next()
 
 if __name__ == '__main__':

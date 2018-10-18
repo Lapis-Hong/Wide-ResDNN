@@ -9,21 +9,17 @@ import os
 import yaml
 
 # Yaml config file path
-BASE_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'conf/criteo')
+CONF_DIR = 'conf/criteo'
 FEATURE_CONF_FILE = 'feature.basic.yaml'
-MODEL_CONF_FILE = 'model.yaml'
 TRAIN_CONF_FILE = 'train.yaml'
 
 
 class Config(object):
     """Config class"""
-    def __init__(self,
-                 feature_conf_file=FEATURE_CONF_FILE,
-                 model_conf_file=MODEL_CONF_FILE,
-                 train_conf_file=TRAIN_CONF_FILE):
-        self._feature_conf_file = os.path.join(BASE_DIR, feature_conf_file)
-        self._model_conf_file = os.path.join(BASE_DIR, model_conf_file)
-        self._train_conf_file = os.path.join(BASE_DIR, train_conf_file)
+    def __init__(self, feature_conf_file=FEATURE_CONF_FILE, train_conf_file=TRAIN_CONF_FILE):
+        self._base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        self._feature_conf_file = os.path.join(self._base_dir, CONF_DIR, feature_conf_file)
+        self._train_conf_file = os.path.join(self._base_dir, CONF_DIR, train_conf_file)
 
     @staticmethod
     def _check_feature_conf(feature, f_type, f_param):
@@ -71,10 +67,6 @@ class Config(object):
                 self._check_feature_conf(feature.lower(), type_, param)
             return feature_conf
 
-    def _read_model_conf(self):
-        with open(self._model_conf_file) as f:
-            return yaml.load(f)
-
     def _read_train_conf(self):
         with open(self._train_conf_file) as f:
             return yaml.load(f)
@@ -96,23 +88,24 @@ class Config(object):
         return self._read_train_conf()["train"]
 
     @property
-    def distribution(self):
-        return self._read_train_conf()["distribution"]
+    def model(self):
+        return self._read_train_conf()["model"]
 
     @property
     def runconfig(self):
         return self._read_train_conf()["runconfig"]
 
     @property
-    def model(self):
-        return self._read_model_conf()
+    def distributed(self):
+        return self._read_train_conf()["distributed"]
+
 
 if __name__ == '__main__':
     print(Config().feature)
     print(Config().num_features)
     print(Config().config)
     print(Config().train)
-    print(Config().distribution)
+    print(Config().distributed)
     print(Config().runconfig)
     print(Config().model)
 

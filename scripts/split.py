@@ -40,8 +40,7 @@ if __name__ == '__main__':
         valid_ratio = float(sys.argv[2])
         test_ratio = float(sys.argv[3])
     except Exception as e:
-        print(e)
-        print("Can not parse argv, using defaults ratio 0.9:0.05:0.05.")
+        print("Using defaults ratio 0.9:0.05:0.05.")
         split(data_file)
     else:
         split(data_file, valid_ratio, test_ratio)

@@ -79,8 +79,8 @@ def _build_model_columns():
 
 
 def _build_distribution():
-    TF_CONFIG = Config().distribution
-    if TF_CONFIG["is_distribution"]:
+    TF_CONFIG = Config().distributed
+    if TF_CONFIG["is_distributed"]:
         cluster_spec = TF_CONFIG["cluster"]
         job_name = TF_CONFIG["job_name"]
         task_index = TF_CONFIG["task_index"]
