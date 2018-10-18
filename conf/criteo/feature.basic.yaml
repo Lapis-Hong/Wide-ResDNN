@@ -1,46 +1,5 @@
 # Feature basic Configuration for Kaggle Criteo Dataset.
 
-# Refer: https://www.kaggle.com/c/criteo-display-ad-challenge/data
-
-# Each feature consists 2 attributes `type`, `parameter`.
-# 1. feature: required, feature name.
-# 2. type: required, feature type, `category` or `continuous`.
-# 3. parameter: main parameter for tf.feature_column according to feature type.
-
-#    (1) type: category
-#          using `tf.feature.categorical_column_with_hash_bucket` for category feature
-#        parameter:
-#          hash_bucket_size: required, eg: 1000
-#          embedding dim: optional, set empty to not use category feature for deep input;
-#                            set positive integer to embedding category feature for deep using tf.feature.embedding_column;
-#                            set `auto` to use empirical formula to calculate embedding dim.
-#    (2) type: continuous
-#          using `tf.feature_column.numeric_column` for continuous feature
-#        parameter:
-#          mean: optional, set both mean and std to do standard normalization.
-#          std: optional
-#          boundaries: optional, set empty to not use continuous feature for wide input;
-#                      set boundaries to discretize continuous feature for wide input using tf.feature_column.bucketized_column
-
-# Q & A about hash_bucket_size:
-# If category size=1000, how much should hash_bucket_size be ?
-#   An interesting discovery is that randomly chose N number a_i between 1~N, i=1,...N
-#     let b_i = a_i % N, the distinct b_i from all N number is about 0.633.
-#     in other words, a random hash func chose N as hash_bucket_size collision rate is 0.633.
-#   Recommend `hash_bucket_size` to be 2~3*category size.
-#     larger `hash_bucket_size` require more memory and complexity, but smaller cause more collision
-#   Here use the strategy that
-#     for low sparsity category, set `hash_bucket_size` 3~4*category size to reduce collision
-#     for high sparsity category, set 1.5~2*category size to save memory.
-
-# Note:
-#   For feature.basic config:
-#     1. Use static hash_bucket_size=1000 and use category features for deep with static embedding_dim=8.
-#     2. No standard normalization and not use continuous feature for wide.
-#   For feature.advance config:
-#     1. Use dynamic hash_bucket_size and use category features for deep with dynamic embedding_dim.
-#     2. Do standard normalization and use continuous feature for wide.
-
 f1:
   type: continuous
   parameter:
