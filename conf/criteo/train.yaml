@@ -6,13 +6,16 @@ train:
   model_type: wide_deep
   train_data: data/criteo/train.csv
   dev_data: data/criteo/dev.csv
-  test_data: data/criteo/test.csv
+  test_data:
   batch_size: 256
   train_epochs: 5
   epochs_per_eval: 1
   keep_train: 0
-  num_samples: 50000000
+  num_samples: 5000000
   checkpoint_path:
+  skip_lines:
+  field_delim: '\t'
+  verbose: 0
 
 # Model Parameters
 model:
@@ -32,17 +35,17 @@ model:
   deep_l1: 0.01
   deep_l2: 0.01
   dropout:
-  batch_normalization: false
+  batch_normalization: true
 
 # Saving Parameters (Optional)
 runconfig:
   tf_random_seed: 12345
   save_summary_steps: 100
-  save_checkpoints_steps:
-  save_checkpoints_secs: 1500
+  save_checkpoints_steps: 1000
+  save_checkpoints_secs:
   keep_checkpoint_max: 5
   keep_checkpoint_every_n_hours: 1
-  log_step_count_steps: 100
+  log_step_count_steps: 1000
 
 # Distributed Parameters
 distributed:

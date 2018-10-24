@@ -1,0 +1,26 @@
+## Input Data Fields Schema
+
+1: id      # ad identifier
+2: label   # 0/1 for non-click/click
+3: hour    # format is YYMMDDHH, so 14091123 means 23:00 on Sept. 11, 2014 UTC.
+4: C1      # anonymized categorical variable
+5: banner_pos
+6: site_id
+7: site_domain
+8: site_category
+9: app_id
+10: app_domain
+11: app_category
+12: device_id
+13: device_ip
+14: device_model
+15: device_type
+16: device_conn_type
+17: C14
+18: C15
+19: C16
+20: C17
+21: C18
+22: C19
+23: C20
+24: C21

@@ -14,7 +14,6 @@ import os
 import numpy as np
 import tensorflow as tf
 
-from wide_resdnn.read_conf import Config
 from wide_resdnn.joint import WideAndDeepClassifier
 
 
@@ -31,20 +30,21 @@ def _embed_dim(dim):
     return int(np.power(2, np.ceil(np.log(dim ** 0.25))))
 
 
-def _build_model_columns():
+def _build_model_columns(feature_conf):
     """
     Build wide and deep feature columns.
         wide_columns: category features + [discretized continuous features]
         deep_columns: continuous features + [embedded category features]
+    Args:
+        feature_conf: Feature configuration dict (Config instance feature attribute).
     Return: 
         _CategoricalColumn and _DenseColumn in tf.estimators API
     """
-    feature_conf_dic = Config().feature
-    tf.logging.info('Total feature classes: {}'.format(len(feature_conf_dic)))
+    tf.logging.info('Total feature classes: {}'.format(len(feature_conf)))
 
     wide_columns, deep_columns = [], []
     wide_dim, deep_dim = 0, 0
-    for feature, conf in feature_conf_dic.items():
+    for feature, conf in feature_conf.items():
         f_type, f_param = conf["type"], conf["parameter"]
         if f_type == 'category':  # category features
                 hash_bucket_size, embedding_dim = f_param['hash_bucket_size'], f_param["embedding_dim"]
@@ -78,8 +78,11 @@ def _build_model_columns():
     return wide_columns, deep_columns
 
 
-def _build_distribution():
-    TF_CONFIG = Config().distributed
+def _build_distributed(TF_CONFIG):
+    """Build distributed env.
+    Args:
+        TF_CONFIG: distributed conf (Config instance distributed attribute)
+    """
     if TF_CONFIG["is_distributed"]:
         cluster_spec = TF_CONFIG["cluster"]
         job_name = TF_CONFIG["job_name"]
@@ -123,17 +126,17 @@ def _build_opt(opt, lr, l1, l2, lr_decay):
             l2_regularization_strength=l2)
 
 
-def build_estimator(model_dir, model_type):
+def build_estimator(model_dir, model_type, conf):
     """Build an estimator for wide & resdnn model."""
-    runconfig = Config().runconfig
-    conf = Config().model
-    wide_columns, deep_columns = _build_model_columns()
-    _build_distribution()
+    wide_columns, deep_columns = _build_model_columns(conf.feature)
+    _build_distributed(conf.distributed)
+
     # Create a tf.estimator.RunConfig to ensure the model is run on CPU, which
     # trains faster than GPU for this model.
-    run_config = tf.estimator.RunConfig(**runconfig).replace(
+    run_config = tf.estimator.RunConfig(**conf.runconfig).replace(
         session_config=tf.ConfigProto(device_count={'GPU': 0}))
 
+    conf = conf.model
     # Optimizer with regularization and learning rate decay.
     wide_opt = _build_opt(
         tf.train.FtrlOptimizer, conf["wide_learning_rate"], conf["wide_l1"], conf["wide_l2"], conf["wide_lr_decay"])
@@ -161,7 +164,9 @@ def build_estimator(model_dir, model_type):
 
 if __name__ == '__main__':
     tf.logging.set_verbosity(tf.logging.DEBUG)
-    model = build_estimator('./model', 'wide_deep')
+    from wide_resdnn.read_conf import Config
+    conf = Config("../conf/criteo")
+    model = build_estimator('./model', 'wide_deep', conf)
     # print(model.config)  # <tensorflow.python.estimator.run_config.RunConfig object at 0x118de4e10>
     # print(model.model_dir)  # ./model
     # print(model.model_fn)  # <function public_model_fn at 0x118de7b18>

@@ -8,21 +8,25 @@ from __future__ import unicode_literals
 import os
 import yaml
 
-# Yaml config file path
-CONF_DIR = 'conf/criteo'
-FEATURE_CONF_FILE = 'feature.basic.yaml'
-TRAIN_CONF_FILE = 'train.yaml'
+from util import check_file_exist
 
 
 class Config(object):
     """Config class"""
-    def __init__(self, feature_conf_file=FEATURE_CONF_FILE, train_conf_file=TRAIN_CONF_FILE):
-        self._base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        self._feature_conf_file = os.path.join(self._base_dir, CONF_DIR, feature_conf_file)
-        self._train_conf_file = os.path.join(self._base_dir, CONF_DIR, train_conf_file)
+    def __init__(self, config_dir):
+        # self._base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        self._schema_conf_file = os.path.join(config_dir, "schema.yaml")
+        self._feature_conf_file = os.path.join(config_dir, "feature.yaml")
+        self._train_conf_file = os.path.join(config_dir, "train.yaml")
+        check_file_exist(self._schema_conf_file)
+        check_file_exist(self._feature_conf_file)
+        check_file_exist(self._train_conf_file)
 
     @staticmethod
-    def _check_feature_conf(feature, f_type, f_param):
+    def _check_feature_conf(feature, schema, f_type, f_param):
+        if feature not in schema:
+            raise ValueError("Invalid feature name `{}` in feature.yaml, "
+                             "must be consistent with schema.yaml".format(feature))
         if f_type is None:
             raise ValueError("feature type are required in feature conf, "
                              "found empty value for feature `{}`.".format(feature))
@@ -59,12 +63,17 @@ class Config(object):
                         raise TypeError('boundaries parameter element must be integer or float,'
                                         'found `{}` for feature `{}` in feature conf.'.format(boundaries, feature))
 
+    def _read_schema_conf(self):
+        with open(self._schema_conf_file) as f:
+            return yaml.load(f)  # {k: v.lower() for k, v in yaml.load(f).items()}
+
     def _read_feature_conf(self):
         with open(self._feature_conf_file) as f:
             feature_conf = yaml.load(f)
+            schema = self._read_schema_conf().values()
             for feature, conf in feature_conf.items():
                 type_, param = conf["type"], conf["parameter"]
-                self._check_feature_conf(feature.lower(), type_, param)
+                self._check_feature_conf(feature, schema, type_, param)
             return feature_conf
 
     def _read_train_conf(self):
@@ -72,12 +81,12 @@ class Config(object):
             return yaml.load(f)
 
     @property
-    def feature(self):
-        return self._read_feature_conf()
+    def schema(self):
+        return self._read_schema_conf()
 
     @property
-    def num_features(self):
-        return len(self._read_feature_conf().keys())
+    def feature(self):
+        return self._read_feature_conf()
 
     @property
     def config(self):
@@ -99,15 +108,32 @@ class Config(object):
     def distributed(self):
         return self._read_train_conf()["distributed"]
 
+    def print_config(self):
+        conf = self._read_train_conf()
+        print("\nParameters:")
+        print("train:")
+        for k, v in conf["train"].items():
+            print("\t{}: {}".format(k, v))
+        print("model:")
+        for k, v in conf["model"].items():
+            print("\t{}: {}".format(k, v))
+        if conf["distributed"]["is_distributed"]:
+            print("distributed:")
+            for k, v in conf["model"].items():
+                print("\t{}: {}".format(k, v))
+
 
 if __name__ == '__main__':
-    print(Config().feature)
-    print(Config().num_features)
-    print(Config().config)
-    print(Config().train)
-    print(Config().distributed)
-    print(Config().runconfig)
-    print(Config().model)
+    config_dir = 'conf/criteo'
+    conf = Config(config_dir)
+    print(conf.schema)
+    print(conf.feature)
+    print(conf.config)
+    print(conf.train)
+    print(conf.distributed)
+    print(conf.runconfig)
+    print(conf.model)
+    conf.print_config()
 
 
 

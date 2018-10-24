@@ -24,16 +24,20 @@ CONFIG = Config().train
 parser = argparse.ArgumentParser(description='Evaluate Wide and Deep Model.')
 
 parser.add_argument(
+    '--conf_dir', type=bool, default="conf/criteo",
+    help='Path to configuration.')
+
+parser.add_argument(
+    '--test_data', type=str, default=CONFIG["test_data"],
+    help='Evaluating data dir.')
+
+parser.add_argument(
     '--model_dir', type=str, default=CONFIG["model_dir"],
     help='Model checkpoint dir for evaluating.')
 
 parser.add_argument(
     '--model_type', type=str, default=CONFIG["model_type"],
     help="Valid model types: {'wide', 'deep', 'wide_deep'}.")
-
-parser.add_argument(
-    '--test_data', type=str, default=CONFIG["test_data"],
-    help='Evaluating data dir.')
 
 parser.add_argument(
     '--batch_size', type=int, default=CONFIG["batch_size"],

@@ -1,246 +1,246 @@
 # Feature basic Configuration for Kaggle Criteo Dataset.
 
-f1:
+I1:
   type: continuous
   parameter:
     mean:
     std:
     boundaries:
 
-f2:
+I2:
   type: continuous
   parameter:
     mean:
     std:
     boundaries:
 
-f3:
+I3:
   type: continuous
   parameter:
     mean:
     std:
     boundaries:
 
-f4:
+I4:
   type: continuous
   parameter:
     mean:
     std:
     boundaries:
 
-f5:
+I5:
   type: continuous
   parameter:
     mean:
     std:
     boundaries:
 
-f6:
+I6:
   type: continuous
   parameter:
     mean:
     std:
     boundaries:
 
-f7:
+I7:
   type: continuous
   parameter:
     mean:
     std:
     boundaries:
 
-f8:
+I8:
   type: continuous
   parameter:
     mean:
     std:
     boundaries:
 
-f9:
+I9:
   type: continuous
   parameter:
     mean:
     std:
     boundaries:
 
-f10:
+I10:
   type: continuous
   parameter:
     mean:
     std:
     boundaries:
 
-f11:
+I11:
   type: continuous
   parameter:
     mean:
     std:
     boundaries:
 
-f12:
+I12:
   type: continuous
   parameter:
     mean:
     std:
     boundaries:
 
-f13:
+I13:
   type: continuous
   parameter:
     mean:
     std:
     boundaries:
 
-f14:
+C1:
   type: category
   parameter:
     hash_bucket_size: 1000
     embedding_dim: 8
 
-f15:
+C2:
   type: category
   parameter:
     hash_bucket_size: 1000
     embedding_dim: 8
 
-f16:
+C3:
   type: category
   parameter:
     hash_bucket_size: 1000
     embedding_dim: 8
 
-f17:
+C4:
   type: category
   parameter:
     hash_bucket_size: 1000
     embedding_dim: 8
 
-f18:
+C5:
   type: category
   parameter:
     hash_bucket_size: 1000
     embedding_dim: 8
 
-f19:
+C6:
   type: category
   parameter:
     hash_bucket_size: 1000
     embedding_dim: 8
 
-f20:
+C7:
   type: category
   parameter:
     hash_bucket_size: 1000
     embedding_dim: 8
 
-f21:
+C8:
   type: category
   parameter:
     hash_bucket_size: 1000
     embedding_dim: 8
 
-f22:
+C9:
   type: category
   parameter:
     hash_bucket_size: 1000
     embedding_dim: 8
 
-f23:
+C10:
   type: category
   parameter:
     hash_bucket_size: 1000
     embedding_dim: 8
 
-f24:
+C11:
   type: category
   parameter:
     hash_bucket_size: 1000
     embedding_dim: 8
 
-f25:
+C12:
   type: category
   parameter:
     hash_bucket_size: 1000
     embedding_dim: 8
 
-f26:
+C13:
   type: category
   parameter:
     hash_bucket_size: 1000
     embedding_dim: 8
 
-f27:
+C14:
   type: category
   parameter:
     hash_bucket_size: 1000
     embedding_dim: 8
 
-f28:
+C15:
   type: category
   parameter:
     hash_bucket_size: 1000
     embedding_dim: 8
 
-f29:
+C16:
   type: category
   parameter:
     hash_bucket_size: 1000
     embedding_dim: 8
 
-f30:
+C17:
   type: category
   parameter:
     hash_bucket_size: 1000
     embedding_dim: 8
 
-f31:
+C18:
   type: category
   parameter:
     hash_bucket_size: 1000
     embedding_dim: 8
-f32:
-  type: category
-  parameter:
-    hash_bucket_size: 1000
-    embedding_dim: 8
-
-f33:
+C19:
   type: category
   parameter:
     hash_bucket_size: 1000
     embedding_dim: 8
 
-f34:
+C20:
   type: category
   parameter:
     hash_bucket_size: 1000
     embedding_dim: 8
 
-f35:
+C21:
   type: category
   parameter:
     hash_bucket_size: 1000
     embedding_dim: 8
 
-f36:
+C22:
   type: category
   parameter:
     hash_bucket_size: 1000
     embedding_dim: 8
 
-f37:
+C23:
   type: category
   parameter:
     hash_bucket_size: 1000
     embedding_dim: 8
 
-f38:
+C24:
   type: category
   parameter:
     hash_bucket_size: 1000
     embedding_dim: 8
 
-f39:
+C25:
+  type: category
+  parameter:
+    hash_bucket_size: 1000
+    embedding_dim: 8
+
+C26:
   type: category
   parameter:
     hash_bucket_size: 1000

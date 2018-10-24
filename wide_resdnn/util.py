@@ -8,6 +8,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import os
 import time
 import six
 from functools import wraps
@@ -23,7 +24,7 @@ def timer(info=''):
             s_time = time.time()
             func(*args, **kwargs)
             e_time = time.time()
-            period = (e_time-s_time) / 60.0
+            period = (e_time-s_time) / 60
             print(info + '-> elapsed time: %.3f minutes' % period)
         return wrapper
     return _timer
@@ -31,6 +32,11 @@ def timer(info=''):
 
 def elapse_time(start_time):
     return round((time.time()-start_time) / 60)
+
+
+def check_file_exist(file_path):
+    if not os.path.exists(file_path):
+        raise ValueError("`{}` file not exists.".format(file_path))
 
 
 def add_layer_summary(value, tag):
@@ -87,3 +93,4 @@ def get_optimizer_instance(opt, learning_rate=None):
     if not isinstance(opt, tf.train.Optimizer):
         raise ValueError('The given object is not an Optimizer instance. Given: {}'.format(opt))
     return opt
+

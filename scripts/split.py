@@ -2,47 +2,44 @@
 # coding: utf-8
 # @Author: lapis-hong
 # @Date  : 2018/10/17
-"""This scripts for randomly split data into train, validation and test sets."""
+"""This script for randomly split train data into train and test sets.
+Note here the test set actually means the validation set
+We usually split train data into train set and dev set, and with another test data."""
+
 import sys
 import os
 import random
 
 
-def split(data_file, validation_ratio=0.05, test_ratio=0.05):
+def split(data_file, train_ratio=0.9):
     data_dir = os.path.dirname(os.path.abspath(data_file))
     train_file = os.path.join(data_dir, "train.csv")
-    validation_file = os.path.join(data_dir, "dev.csv")
-    test_file = os.path.join(data_dir, "test.csv")
-    train_cnt, dev_cnt, test_cnt = 0, 0, 0
+    test_file = os.path.join(data_dir, "dev.csv")
+    train_cnt, test_cnt = 0, 0
     with open(train_file, "w") as f1, \
-            open(validation_file, "w") as f2, \
-                open(test_file, "w") as f3:
+                open(test_file, "w") as f2:
         for line in open(data_file):
             p = random.random()
-            if p < 1 - validation_ratio - test_ratio:
+            if p < train_ratio:
                 f1.writelines(line)
                 train_cnt += 1
-            elif 1 - validation_ratio - test_ratio <= p < 1 - test_ratio:
-                f2.writelines(line)
-                dev_cnt += 1
             else:
-                f3.writelines(line)
+                f2.writelines(line)
                 test_cnt += 1
-    print("Split data into {} train samples, {} dev samples and {} test samples.\nSee results in `{}`.".format(
-        train_cnt, dev_cnt, test_cnt, data_dir))
+    print("Split data into {} train samples and {} validation samples.\nSee results in `{}`.".format(
+        train_cnt, test_cnt, data_dir))
 
 
 if __name__ == '__main__':
-    if not (len(sys.argv) == 2 or len(sys.argv) == 4):
-        exit("Usage:\n\t1. python split.py $data_file\n\t2. python split.py $data_file $valid_ratio $test_ratio")
+    if not (len(sys.argv) == 2 or len(sys.argv) == 3):
+        exit("Usage:\n\t1. python split.py $data_file\n\t2. python split.py $data_file $train_ratio")
     data_file = sys.argv[1]
     try:
-        valid_ratio = float(sys.argv[2])
-        test_ratio = float(sys.argv[3])
+        train_ratio = float(sys.argv[2])
     except Exception as e:
-        print("Using defaults ratio 0.9:0.05:0.05.")
+        print("Using defaults train:dev=0.9:0.1.")
         split(data_file)
     else:
-        split(data_file, valid_ratio, test_ratio)
+        split(data_file, train_ratio)
 
 

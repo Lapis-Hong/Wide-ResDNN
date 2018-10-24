@@ -1,6 +1,6 @@
 # Wide and ResDNN Learning (Wide&ResDNN)
 
-## Directory
+## Content
 * [Overview](#overview)
 * [Dataset](#dataset)
 * [Model](#model)
@@ -20,7 +20,11 @@ The code is based on TensorFlow wide and deep tutorial with high level `tf.estim
 We use Kaggle Criteo and Avazu Dataset as examples.
 
 This project is still on progress...
-
+### Requirements
+- Python 2.7
+- TensorFlow >= 1.4
+- NumPy
+- pyyaml
 
 ## Dataset
 
@@ -102,10 +106,14 @@ tensorboard --logdir=./model/wide_deep
 ```
 
 ## Experiments
+MAX AUC=0.758932948112
+MIN LOSS=0.484007745981
 
+MAX AUC=0.761410713196
+MIN LOSS=0.484100610018
 
+MAX AUC=0.748549520969
+MIN LOSS=0.520223140717
 
-
-
-
-
+MAX AUC=0.763371109962
+MIN LOSS=0.48044359684

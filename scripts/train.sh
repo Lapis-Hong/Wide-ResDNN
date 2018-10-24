@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
-set -e
+set -ex
 
-nohup python train.py > train.log 2>&1 &
+cur_dir=$(cd `dirname $0`; pwd)
+dir=`dirname ${cur_dir}`
+
+cd ${dir}
+nohup python train.py > log/train.log 2>&1 &

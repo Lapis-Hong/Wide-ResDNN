@@ -1,0 +1,42 @@
+## Input Data Fields Schema
+
+1: label   # Target variable that indicates if an ad was clicked (1) or not (0).
+2: I1      # integer features (mostly count features).
+3: I2
+4: I3
+5: I4
+6: I5
+7: I6
+8: I7
+9: I8
+10: I9
+11: I10
+12: I11
+13: I12
+14: I13
+15: C1     #  categorical features. The values of these features have been hashed onto 32 bits for anonymization purposes.
+16: C2
+17: C3
+18: C4
+19: C5
+20: C6
+21: C7
+22: C8
+23: C9
+24: C10
+25: C11
+26: C12
+27: C13
+28: C14
+29: C15
+30: C16
+31: C17
+32: C18
+33: C19
+34: C20
+35: C21
+36: C22
+37: C23
+38: C24
+39: C25
+40: C26

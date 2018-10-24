@@ -84,7 +84,7 @@ def _dnn_logit_fn(features, mode, model_id, units,
             feature_columns=feature_columns)
     layers = [net]
 
-    # Add mode residual connection start from 1st hidden layer, not input layer (different dim).
+    # `Add` mode residual connection start from 1st hidden layer, not input layer (different dim).
     if residual_mode == "add":
         with tf.variable_scope(
                 'dnn_{}/hiddenlayer_{}'.format(model_id, 1), values=(net,)) as hidden_layer_scope:
@@ -94,6 +94,7 @@ def _dnn_logit_fn(features, mode, model_id, units,
                 activation=activation_fn,
                 kernel_initializer=tf.glorot_uniform_initializer(),  # also called Xavier uniform initializer.
                 name=hidden_layer_scope)
+            add_layer_summary(net, hidden_layer_scope.name)
             hidden_units.pop(0)
         layers = [net]  # 1st hidden layer
 

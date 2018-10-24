@@ -1,0 +1,139 @@
+# Feature Configuration for Kaggle Avazu Dataset.
+
+id:
+  type: category
+  parameter:
+    hash_bucket_size: 1000
+    embedding_dim: 8
+
+hour:
+  type: category
+  parameter:
+    hash_bucket_size: 1000
+    embedding_dim: 8
+
+C1:
+  type: category
+  parameter:
+    hash_bucket_size: 1000
+    embedding_dim: 8
+
+banner_pos:
+  type: category
+  parameter:
+    hash_bucket_size: 1000
+    embedding_dim: 8
+
+site_id:
+  type: category
+  parameter:
+    hash_bucket_size: 1000
+    embedding_dim: 8
+
+site_domain:
+  type: category
+  parameter:
+    hash_bucket_size: 1000
+    embedding_dim: 8
+
+site_category:
+  type: category
+  parameter:
+    hash_bucket_size: 1000
+    embedding_dim: 8
+
+app_id:
+  type: category
+  parameter:
+    hash_bucket_size: 1000
+    embedding_dim: 8
+
+app_domain:
+  type: category
+  parameter:
+    hash_bucket_size: 1000
+    embedding_dim: 8
+
+app_category:
+  type: category
+  parameter:
+    hash_bucket_size: 1000
+    embedding_dim: 8
+
+device_id:
+  type: category
+  parameter:
+    hash_bucket_size: 1000
+    embedding_dim: 8
+
+device_ip:
+  type: category
+  parameter:
+    hash_bucket_size: 1000
+    embedding_dim: 8
+
+device_model:
+  type: category
+  parameter:
+    hash_bucket_size: 1000
+    embedding_dim: 8
+
+device_type:
+  type: category
+  parameter:
+    hash_bucket_size: 1000
+    embedding_dim: 8
+
+device_conn_type:
+  type: category
+  parameter:
+    hash_bucket_size: 1000
+    embedding_dim: 8
+
+C14:
+  type: category
+  parameter:
+    hash_bucket_size: 1000
+    embedding_dim: 8
+
+C15:
+  type: category
+  parameter:
+    hash_bucket_size: 1000
+    embedding_dim: 8
+
+C16:
+  type: category
+  parameter:
+    hash_bucket_size: 1000
+    embedding_dim: 8
+
+C17:
+  type: category
+  parameter:
+    hash_bucket_size: 1000
+    embedding_dim: 8
+
+C18:
+  type: category
+  parameter:
+    hash_bucket_size: 1000
+    embedding_dim: 8
+
+C19:
+  type: category
+  parameter:
+    hash_bucket_size: 1000
+    embedding_dim: 8
+
+C20:
+  type: category
+  parameter:
+    hash_bucket_size: 1000
+    embedding_dim: 8
+
+C21:
+  type: category
+  parameter:
+    hash_bucket_size: 1000
+    embedding_dim: 8

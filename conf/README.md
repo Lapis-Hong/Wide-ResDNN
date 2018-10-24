@@ -1,8 +1,26 @@
 # Configuration in Yaml
+For each dataset, we need three config files: 
+- schema.yaml
+- feature.yaml
+- train.yaml
+
+## Schema config
+This should be consistent with the **data fields**, the order matters.  
+Field index start from 1, and the target variable should be named with **`label`**.
+
+### Examples:
+```
+# Field index: field name
+1: xxx
+2: xxx
+3: xxx
+
+```
 
 ## Feature config
 Each feature consists 2 attributes **`type`**, **`parameter`**.  
-The **`parameter`** are differ according to two **`type`**, **continuous** or **category**.
+The **`parameter`** are differ according to two **`type`**, **continuous** or **category**.  
+The feature name should be consistent with `schema.yaml`.
 
 ### Examples:
 ```
@@ -21,7 +39,7 @@ f2:
     parameter:      
         mean: 3.5                # optional, set both mean and std to do standard normalization.
         std: 2.5                 # optional
-        boundaries:              # optional, set empty to not use continuous feature for wide input;
+        boundaries: [0., 1., 2.] # optional, set empty to not use continuous feature for wide input;
                                              set boundaries to discretize continuous feature for wide input using tf.feature_column.bucketized_column
 ```  
 ### how to set `hash_bucket_size` ?
@@ -72,7 +90,7 @@ train:
   keep_train: 0                     # bool, set true or 1 to keep train from ckpt
   num_samples: 50000000             # train sample size for shuffle buffer size
   checkpoint_path:                  # optional, checkpoint path used for testing  
-
+  verbose: 1                        # bool, Set 0 for tf log level INFO, 1 for ERROR 
 # Model Parameters
 model:
   # Wide Parameters                  
