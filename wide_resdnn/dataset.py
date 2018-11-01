@@ -68,8 +68,8 @@ def input_fn(conf, data_file, num_epochs, batch_size, shuffle=True, shuffle_buff
         shuffle_buffer_size = shuffle_buffer_size or batch_size * 1000
         dataset = dataset.shuffle(buffer_size=shuffle_buffer_size, seed=123)  # set of Tensor object
     # Call repeat after shuffling, to prevent separate epochs from blending together.
-    dataset = dataset.map(_parse_csv, num_parallel_calls=16).repeat(num_epochs).batch(batch_size)
-    # dataset = dataset.prefetch(1)
+    dataset = dataset.map(_parse_csv, num_parallel_calls=4).repeat(num_epochs).batch(batch_size)
+    dataset = dataset.prefetch(2)
     # To use a Dataset in the input_fn of a tf.estimator.Estimator,
     # simply return the Dataset and the framework will take care of creating an iterator and initializing it for you.
     # dataset.make_one_shot_iterator().get_next() in older version API

@@ -48,12 +48,12 @@ def _build_model_columns(feature_conf):
         f_type, f_param = conf["type"], conf["parameter"]
         if f_type == 'category':  # category features
                 hash_bucket_size, embedding_dim = f_param['hash_bucket_size'], f_param["embedding_dim"]
+                # If empty, default use empirical embedding dim
+                embedding_dim = embedding_dim or _embed_dim(hash_bucket_size)
                 col = categorical_column_with_hash_bucket(feature, hash_bucket_size=hash_bucket_size)
                 wide_columns.append(col)
                 wide_dim += hash_bucket_size
-                if embedding_dim:  # embedding category feature for deep input
-                    if isinstance(embedding_dim, str):  # auto set embedding dim
-                        embedding_dim = _embed_dim(hash_bucket_size)
+                if embedding_dim != 0:  # embedding category feature for deep input
                     deep_columns.append(embedding_column(col, dimension=embedding_dim, combiner='mean'))
                     deep_dim += embedding_dim
         else:  # continuous features

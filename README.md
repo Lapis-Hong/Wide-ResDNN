@@ -106,14 +106,34 @@ tensorboard --logdir=./model/wide_deep
 ```
 
 ## Experiments
-MAX AUC=0.758932948112
-MIN LOSS=0.484007745981
+First, we evaluate the base model `wide_deep` to chose best hyper-parameters.  
 
-MAX AUC=0.761410713196
-MIN LOSS=0.484100610018
+wide_deep|1024-512-256 | 512-512-512 | 256-256-256 |
+-------- | ----------- | ----------- | ----------- | 
+auc      | 0.7763      | 0.7762      | 0.7808      |
+logloss  | 0.4700      | 0.4709      | 0.4662      |
 
-MAX AUC=0.748549520969
-MIN LOSS=0.520223140717
 
-MAX AUC=0.763371109962
-MIN LOSS=0.48044359684
+From the result we found that `256-256-256` architecture works best,
+we also found that dropout decrease the performance.**
+
+
+Then, we evaluate our `wide_resdnn` model with different number of layers using fixed 256 hidden units.
+
+model             | 3 layers    | 4 layers    | 5 layers    | 6 layers    |
+------            | ---------   | ---------   | ---------   | --------    |
+------            | auc loss    | auc loss    | auc loss    | auc loss    |
+wide_deep         |0.7808 0.4662|0.7798 0.4674|0.7783 0.4680|0.7695 0.4746|
+first_dense/concat|0.7548 0.5397|             |             |             |
+first_dense/add   |             |             |             |             |
+last_dense/concat |             |             |             |             |
+last_dense/add    |0.7840 0.4636|             |             |             |             
+dense/concat      |             |             |             |             |
+dense/add         |             |             |             |             |
+resnet/concat     |             |             |             |             |
+resnet/add        |             |             |             |             |
+
+
+
+
+

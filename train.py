@@ -22,8 +22,8 @@ from wide_resdnn.read_conf import Config
 from wide_resdnn.util import elapse_time
 
 # Config file path, change it to use different data.
-# CONFIG = Config("conf/criteo")
-CONFIG = Config("conf/avazu")
+CONFIG = Config("conf/criteo")
+# CONFIG = Config("conf/avazu")
 
 parser = argparse.ArgumentParser(description='Train Wide and Deep Model.')
 
@@ -62,6 +62,7 @@ parser.add_argument(
 def train(model):
     """Custom train and eval function, eval between epochs."""
     tf.logging.info('Evaluate every {} epochs'.format(FLAGS.epochs_per_eval))
+    best_auc, best_logloss = 0, 10000  # saving best auc and logloss
     for n in range(FLAGS.train_epochs // FLAGS.epochs_per_eval):
         tf.logging.info('START TRAIN AT EPOCH {}'.format(FLAGS.epochs_per_eval*n + 1))
         t0 = time.time()
@@ -84,17 +85,16 @@ def train(model):
 
         # Display evaluation metrics
         print('Evaluation metrics at epoch {}: (* means improve)'.format(n+1))
-        best_auc, best_logloss = 0, 10000  # saving best auc and logloss
         improve_auc_token, improve_loss_token = "", ""
         for key in sorted(results):
             value = results[key]
+            print('\t{}: {}'.format(key, value))
             if key == "auc" and value > best_auc:
                 best_auc = value
                 improve_auc_token = "*"
             elif key == "average_loss" and value < best_logloss:
                 best_logloss = value
                 improve_loss_token = "*"
-            print('\t{}: {}'.format(key, value))
         print("\nMAX AUC={:.6f} {}\nMIN LOSS={:.6f} {}".format(
             best_auc, improve_auc_token, best_logloss, improve_loss_token))
         print('-' * 80)

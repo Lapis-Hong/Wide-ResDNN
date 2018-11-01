@@ -95,7 +95,7 @@ def _dnn_logit_fn(features, mode, model_id, units,
                 kernel_initializer=tf.glorot_uniform_initializer(),  # also called Xavier uniform initializer.
                 name=hidden_layer_scope)
             add_layer_summary(net, hidden_layer_scope.name)
-            hidden_units.pop(0)
+            hidden_units = hidden_units[1:]
         layers = [net]  # 1st hidden layer
 
     for layer_id, num_hidden_units in enumerate(hidden_units):

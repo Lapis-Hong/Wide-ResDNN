@@ -94,7 +94,10 @@ class Config(object):
 
     @property
     def train(self):
-        return self._read_train_conf()["train"]
+        conf = self._read_train_conf()["train"]
+        if conf["field_delim"] == r"\t":  # change \\t to \t
+            conf["field_delim"] = "\t"
+        return conf
 
     @property
     def model(self):
@@ -134,6 +137,7 @@ if __name__ == '__main__':
     print(conf.runconfig)
     print(conf.model)
     conf.print_config()
+
 
 
 

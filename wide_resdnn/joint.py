@@ -125,8 +125,8 @@ def _wide_deep_combined_model_fn(
     if model_type == 'deep' or not linear_feature_columns:
         linear_logits = None
     else:
-        linear_optimizer = get_optimizer_instance(linear_optimizer,
-                                                       learning_rate=linear_learning_rate(len(linear_feature_columns)))
+        linear_optimizer = get_optimizer_instance(
+            linear_optimizer, learning_rate=linear_learning_rate(len(linear_feature_columns)))
         _check_no_sync_replicas_optimizer(linear_optimizer)
         with tf.variable_scope(
                 linear_parent_scope,

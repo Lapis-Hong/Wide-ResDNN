@@ -8,7 +8,7 @@ train:
   dev_data: data/criteo/dev.csv
   test_data:
   batch_size: 256
-  train_epochs: 5
+  train_epochs: 15
   epochs_per_eval: 1
   keep_train: 0
   num_samples: 5000000
@@ -25,12 +25,12 @@ model:
   wide_l1: 0.5
   wide_l2: 1
   # deep
-  hidden_units: [1024, 512, 256]
-  connect_mode: normal
-  residual_mode:
+  hidden_units: [256, 256, 256]
+  connect_mode: first_dense
+  residual_mode: add
 
   deep_learning_rate: 0.1
-  deep_lr_decay: false
+  deep_lr_decay: true
   activation_function: tf.nn.relu
   deep_l1: 0.01
   deep_l2: 0.01
@@ -41,11 +41,11 @@ model:
 runconfig:
   tf_random_seed: 12345
   save_summary_steps: 100
-  save_checkpoints_steps: 1000
+  save_checkpoints_steps: 10000
   save_checkpoints_secs:
-  keep_checkpoint_max: 5
+  keep_checkpoint_max: 1
   keep_checkpoint_every_n_hours: 1
-  log_step_count_steps: 1000
+  log_step_count_steps: 500
 
 # Distributed Parameters
 distributed:

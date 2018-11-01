@@ -2,19 +2,23 @@
 # -*- coding: utf-8 -*-
 # @Author: lapis-hong
 # @Date  : 2018/3/25
-"""Auto update feature dynamic config for feature.advance.yaml using feat_val_cnt.txt and mean_std.txt results"""
+"""Deprecated
+Auto update feature dynamic config for feature.advance.yaml using feat_val_cnt.txt and mean_std.txt results"""
 from __future__ import unicode_literals
 
+import os
 import yaml
 
-feat_val_cnt_file = '../conf/feat_val_cnt.txt'
-feat_mean_std_file = '../conf/feat_mean_std.txt'
+conf_dir = '../conf/criteo'
+
+feat_val_cnt_file = os.path.join(conf_dir, 'feat_val_cnt.txt')
+feat_mean_std_file = os.path.join(conf_dir, 'feat_mean_std.txt')
 
 
 def size2hash_bucket_size(feature_size):
     """Category feature size to hash_bucket_size
     Args:
-        feature_size: distinct value count of certain category feature
+        feature_size: category feature distinct value count
     Returns:
         hash_bucket_size
     """
@@ -54,8 +58,9 @@ def read_feat_mean_std():
 
 
 def update_feature_conf():
-    with open('../conf/feature.basic.yaml', 'r') as fi, open('../conf/feature.advance.yaml', 'w') as fo:
+    with open(os.path.join(conf_dir, 'feature.yaml'), 'r') as fi, open(os.path.join(conf_dir, 'feature.advance.yaml'), 'w') as fo:
         feature_conf = yaml.load(fi)
+        print(feature_conf)
         feat_val_cnt_dict = read_feat_val_cnt()
         feat_mean_std_dict = read_feat_mean_std()
 
