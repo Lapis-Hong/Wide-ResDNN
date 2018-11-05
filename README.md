@@ -19,7 +19,7 @@ The **wide model** is able to memorize interactions with data with a large numbe
 The code is based on TensorFlow wide and deep tutorial with high level `tf.estimator.Estimator` API. 
 We use Kaggle Criteo and Avazu Dataset as examples.
 
-This project is still on progress...
+
 ### Requirements
 - Python 2.7
 - TensorFlow >= 1.4
@@ -72,23 +72,33 @@ Note: the test file label is unreleased, here we randomly split train.csv into t
 - C14-C21 -- anonymized categorical variables
 
 ## Model
-1. provide flexible feature configuration and train configuration.
-2. support custom dnn network (arbitrary connections between layers)
-3. support distributed tensorflow  
+`wide_resdnn` is a simple but powerful variant of `wide_deep`, the main difference is the connection mode of deep part (DNN).
+
+We hope to figure out the best kind of skip connections for large scale sparse data tasks.
+Here we provide 5 types connection mode (arbitrary connection is supported also) and 2 types residual mode as follows: 
+
+connect_mode:
+- `normal`: use normal DNN with no residual connections
+- `first_dense`: add addition connections from first input layer to all hidden layers.
+- `last_dense`: add addition connections from all previous layers to last layer.
+- `dense`: add addition connections between all layers, similar to DenseNet.
+- `resnet`: add addition connections between adjacent layers, similar to ResNet.
+
+residual_mode: 
+- `add`: add the previous output, can only used for same hidden size architecture.
+- `concat`: concat the previous layers output
+
 
 ## Usage
 ### Setup
 ```
 cd conf
 vim feature.yaml
-vim model.yaml
 vim train.yaml
 ...
 ```
-
 ### Training
 You can run the code locally as follows:
-
 ```
 python train.py
 ```
@@ -96,44 +106,125 @@ python train.py
 ```
 python test.py
 ```
-
 ### TensorBoard
-
 Run TensorBoard to inspect the details about the graph and training progression.
-
 ```
 tensorboard --logdir=./model/wide_deep
 ```
 
 ## Experiments
-First, we evaluate the base model `wide_deep` to chose best hyper-parameters.  
+### settings
+For simplicity, we do not use cross features, it is highly dataset dependent.
+We only do some basic feature engineering for generalization.
+For continuous features, we use standard normalization transform as input,  
+for category features, we set hash_bucket_size according to its values size,  
+and we use embed category features for deep and not use dicretize continuous features for wide.
+The specific parameters setting see `conf/*/train.yaml`
 
-wide_deep|1024-512-256 | 512-512-512 | 256-256-256 |
--------- | ----------- | ----------- | ----------- | 
-auc      | 0.7763      | 0.7762      | 0.7808      |
-logloss  | 0.4700      | 0.4709      | 0.4662      |
+### criteo dataset
+First, we evaluate the base model `wide_deep` to chose best network architecture.  
+
+network  |1024-512-256 | 512-512-512 | 256-256-256 | 128-128-128 |
+-------- | :---------: | :---------: | :---------: | :---------: |
+auc      | 0.7763      | 0.7762      | 0.7808      |0.7776       |
+logloss  | 0.4700      | 0.4709      | 0.4662      |0.4687       |
+
 
 
 From the result we found that `256-256-256` architecture works best,
-we also found that dropout decrease the performance.**
+we also found that dropout decrease the performance.
 
 
-Then, we evaluate our `wide_resdnn` model with different number of layers using fixed 256 hidden units.
+Then, we evaluate our `wide_resdnn` model with connect mode and residual mode using fixed `256-256-256` architecture.
 
-model             | 3 layers    | 4 layers    | 5 layers    | 6 layers    |
-------            | ---------   | ---------   | ---------   | --------    |
-------            | auc loss    | auc loss    | auc loss    | auc loss    |
-wide_deep         |0.7808 0.4662|0.7798 0.4674|0.7783 0.4680|0.7695 0.4746|
-first_dense/concat|0.7548 0.5397|             |             |             |
-first_dense/add   |             |             |             |             |
-last_dense/concat |             |             |             |             |
-last_dense/add    |0.7840 0.4636|             |             |             |             
-dense/concat      |             |             |             |             |
-dense/add         |             |             |             |             |
-resnet/concat     |             |             |             |             |
-resnet/add        |             |             |             |             |
+model             | auc logloss | 
+------            | ---------   |             
+wide_deep         |0.7808 0.4662|
+first_dense/concat|0.7548 0.5397|        
+first_dense/add   |**0.7843 0.4636**|            
+last_dense/concat |0.7751 0.4830|             
+last_dense/add    |0.7840 **0.4636**|   
+dense/concat      |0.7258 1.2312|             
+dense/add         |0.7839 0.4640|          
+resnet/concat     |0.7638 0.5023|            
+resnet/add        |0.7841 0.4637|             
 
+We found that `add` is consistently much better than `concat`, all the four connect mode result in similar results and our `wide_resdnn` significantly better than `wide_deep`.
 
+Then, we evaluate `wide_deep`, `wide_resdnn` model with different number of layers.
 
+model   |   wide_deep  |first_dense/add|last_dense/add| dense/add| resnet/add  |
+---     | ---          | ---         | ---         | ---         | ---         |
+layers  |auc    logloss|auc   logloss|auc   logloss|auc   logloss|auc   logloss|
+3       |0.7808 0.4662 |0.7843 0.4636|0.7840 0.4636|0.7839 0.4640|0.7841 0.4637|
+5       |0.7783 0.4680 |             |0.7313 0.6651
+7       |||||
+9       |||||
 
+Finally, we need to evaluate model variance, we run each model 10 times to calculate related auc and logloss statics.
+The network setting is `256-256-256`.
+model | wide_deep | wide_resdnn |
+---   | ---       | ---         |
+1     |0.7808 0.4662|0.7843 0.4636|
+2     |0.7798 0.4672|0.7838 0.4652|
+3     |0.7783 0.4685|0.7821 0.4677|
+4     |0.7828 0.4653|0.7818 0.4670|
+5     |0.7767 0.4695|0.7841 0.4638| 
+6     |0.7826 0.4651|0.7823 0.4653|
+7     |0.7783 0.4685|0.7831 0.4648|
+8     |0.7767 0.4699|0.7841 0.4638|
+9     |0.7775 0.4689|0.7827 0.4654|
+10    |0.7821 0.4655|0.7831 0.4647|
+**mean**|0.7796 0.4675|0.7831 0.4651|
+**std** |0.0023 0.0017|0.0009 0.0013|
+We found `wide_resdnn` is significantly better than `wide_deep` and has lower variance.
 
+### avazu dataset
+First, we evaluate the base model `wide_deep` to chose best network architecture. 
+wide_deep| 512-512-512 | 256-256-256 | 128-128-128 |
+-------- | ----------- | ----------- | ----------- | 
+auc      |  0.7528     | 0.7529      | 0.7528      |
+logloss  |  0.3950     | 0.3950      | 0.3950      |
+We found `hidden size` has little influence on performance.
+
+Then, we evaluate our `wide_resdnn` model with connect mode and residual mode using fixed `256-256-256` architecture.
+
+model             | auc logloss | 
+------            | ---------   |             
+wide_deep         |0.7529 0.3950|
+first_dense/concat||        
+first_dense/add   ||            
+last_dense/concat ||             
+last_dense/add    ||   
+dense/concat      ||             
+dense/add         ||          
+resnet/concat     ||            
+resnet/add        || 
+    
+    
+Then, we evaluate `wide_deep`, `wide_resdnn` model with different number of layers.
+
+model   |   wide_deep  |first_dense/add|last_dense/add| dense/add| resnet/add  |
+---     | ---          | ---         | ---         | ---         | ---         |
+layers  |auc    logloss|auc   logloss|auc   logloss|auc   logloss|auc   logloss|
+3       |0.7529 0.3950 |||||
+5       | |             |
+7       |||||
+9       |||||
+
+Finally, we need to evaluate model variance, we run each model 10 times to calculate related auc and logloss statics.
+The network setting is `256-256-256`.
+model | wide_deep | wide_resdnn |
+---   | ---       | ---         |
+1     |||
+2     |||
+3     |||
+4     |||
+5     ||| 
+6     |||
+7     |||
+8     |||
+9     |||
+10    |||
+**mean**|||
+**std** |||

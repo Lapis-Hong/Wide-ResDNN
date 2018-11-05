@@ -90,6 +90,8 @@ train:
   keep_train: 0                     # bool, set true or 1 to keep train from ckpt
   num_samples: 50000000             # train sample size for shuffle buffer size
   checkpoint_path:                  # optional, checkpoint path used for testing  
+  skip_lines: 1                     # optional, dataset skip lines
+  field_delim: '\t'                 # data field delimeter
   verbose: 1                        # bool, Set 0 for tf log level INFO, 1 for ERROR 
 # Model Parameters
 model:

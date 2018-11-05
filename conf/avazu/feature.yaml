@@ -3,137 +3,137 @@
 id:
   type: category
   parameter:
-    hash_bucket_size: 1000
-    embedding_dim: 8
+    hash_bucket_size: 1000000 #15000000
+    embedding_dim:
 
 hour:
   type: category
   parameter:
     hash_bucket_size: 1000
-    embedding_dim: 8
+    embedding_dim:
 
 C1:
   type: category
   parameter:
-    hash_bucket_size: 1000
-    embedding_dim: 8
+    hash_bucket_size: 100
+    embedding_dim:
 
 banner_pos:
   type: category
   parameter:
-    hash_bucket_size: 1000
-    embedding_dim: 8
+    hash_bucket_size: 100
+    embedding_dim:
 
 site_id:
   type: category
   parameter:
-    hash_bucket_size: 1000
-    embedding_dim: 8
+    hash_bucket_size: 10000
+    embedding_dim:
 
 site_domain:
   type: category
   parameter:
-    hash_bucket_size: 1000
-    embedding_dim: 8
+    hash_bucket_size: 10000
+    embedding_dim:
 
 site_category:
   type: category
   parameter:
-    hash_bucket_size: 1000
-    embedding_dim: 8
+    hash_bucket_size: 100
+    embedding_dim:
 
 app_id:
   type: category
   parameter:
-    hash_bucket_size: 1000
-    embedding_dim: 8
+    hash_bucket_size: 10000
+    embedding_dim:
 
 app_domain:
   type: category
   parameter:
     hash_bucket_size: 1000
-    embedding_dim: 8
+    embedding_dim:
 
 app_category:
   type: category
   parameter:
-    hash_bucket_size: 1000
-    embedding_dim: 8
+    hash_bucket_size: 100
+    embedding_dim:
 
 device_id:
   type: category
   parameter:
-    hash_bucket_size: 1000
-    embedding_dim: 8
+    hash_bucket_size: 2000000
+    embedding_dim:
 
 device_ip:
   type: category
   parameter:
-    hash_bucket_size: 1000
-    embedding_dim: 8
+    hash_bucket_size: 1000000 #10000000
+    embedding_dim:
 
 device_model:
   type: category
   parameter:
-    hash_bucket_size: 1000
-    embedding_dim: 8
+    hash_bucket_size: 20000
+    embedding_dim:
 
 device_type:
   type: category
   parameter:
-    hash_bucket_size: 1000
-    embedding_dim: 8
+    hash_bucket_size: 100
+    embedding_dim:
 
 device_conn_type:
   type: category
   parameter:
-    hash_bucket_size: 1000
-    embedding_dim: 8
+    hash_bucket_size: 100
+    embedding_dim:
 
 C14:
   type: category
   parameter:
-    hash_bucket_size: 1000
-    embedding_dim: 8
+    hash_bucket_size: 10000
+    embedding_dim:
 
 C15:
   type: category
   parameter:
-    hash_bucket_size: 1000
-    embedding_dim: 8
+    hash_bucket_size: 100
+    embedding_dim:
 
 C16:
   type: category
   parameter:
-    hash_bucket_size: 1000
-    embedding_dim: 8
+    hash_bucket_size: 100
+    embedding_dim:
 
 C17:
   type: category
   parameter:
     hash_bucket_size: 1000
-    embedding_dim: 8
+    embedding_dim:
 
 C18:
   type: category
   parameter:
-    hash_bucket_size: 1000
-    embedding_dim: 8
+    hash_bucket_size: 20
+    embedding_dim:
 
 C19:
   type: category
   parameter:
-    hash_bucket_size: 1000
-    embedding_dim: 8
+    hash_bucket_size: 200
+    embedding_dim:
 
 C20:
   type: category
   parameter:
     hash_bucket_size: 1000
-    embedding_dim: 8
+    embedding_dim:
 
 C21:
   type: category
   parameter:
-    hash_bucket_size: 1000
-    embedding_dim: 8
+    hash_bucket_size: 100
+    embedding_dim:

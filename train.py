@@ -22,8 +22,8 @@ from wide_resdnn.read_conf import Config
 from wide_resdnn.util import elapse_time
 
 # Config file path, change it to use different data.
-CONFIG = Config("conf/criteo")
-# CONFIG = Config("conf/avazu")
+# CONFIG = Config("conf/criteo")
+CONFIG = Config("conf/avazu")
 
 parser = argparse.ArgumentParser(description='Train Wide and Deep Model.')
 
@@ -62,7 +62,7 @@ parser.add_argument(
 def train(model):
     """Custom train and eval function, eval between epochs."""
     tf.logging.info('Evaluate every {} epochs'.format(FLAGS.epochs_per_eval))
-    best_auc, best_logloss = 0, 10000  # saving best auc and logloss
+    best_auc, best_logloss, best_epoch = 0, 10000, 0  # saving best auc and logloss
     for n in range(FLAGS.train_epochs // FLAGS.epochs_per_eval):
         tf.logging.info('START TRAIN AT EPOCH {}'.format(FLAGS.epochs_per_eval*n + 1))
         t0 = time.time()
@@ -95,9 +95,16 @@ def train(model):
             elif key == "average_loss" and value < best_logloss:
                 best_logloss = value
                 improve_loss_token = "*"
+
+        if improve_loss_token or improve_auc_token:
+                best_epoch = n + 1
         print("\nMAX AUC={:.6f} {}\nMIN LOSS={:.6f} {}".format(
             best_auc, improve_auc_token, best_logloss, improve_loss_token))
         print('-' * 80)
+
+        # Early stopping after 3 epoch no improvement.
+        if n + 1 - best_epoch >= 3:
+            exit("No improvement for 3 epochs, early stopping.")
 
 
 def train_and_eval(model):

@@ -8,7 +8,7 @@ train:
   dev_data: data/criteo/dev.csv
   test_data:
   batch_size: 256
-  train_epochs: 15
+  train_epochs: 25
   epochs_per_eval: 1
   keep_train: 0
   num_samples: 5000000
@@ -39,13 +39,13 @@ model:
 
 # Saving Parameters (Optional)
 runconfig:
-  tf_random_seed: 12345
-  save_summary_steps: 100
-  save_checkpoints_steps: 10000
+  tf_random_seed:
+  save_summary_steps: 1000
+  save_checkpoints_steps: 100000
   save_checkpoints_secs:
   keep_checkpoint_max: 1
   keep_checkpoint_every_n_hours: 1
-  log_step_count_steps: 500
+  log_step_count_steps: 1000
 
 # Distributed Parameters
 distributed:
