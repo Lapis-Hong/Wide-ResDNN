@@ -26,11 +26,11 @@ model:
   wide_l2: 1
   # deep
   hidden_units: [256, 256, 256]
-  connect_mode: first_dense
+  connect_mode: resnet
   residual_mode: concat
 
-  deep_learning_rate: 0.1
-  deep_lr_decay: false
+  deep_learning_rate: 0.05
+  deep_lr_decay: true
   activation_function: tf.nn.relu
   deep_l1: 0.01
   deep_l2: 0.01
