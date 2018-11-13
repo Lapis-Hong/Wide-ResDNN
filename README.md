@@ -124,15 +124,22 @@ The specific parameters setting see `conf/*/train.yaml`
 ### criteo dataset
 First, we evaluate the base model `wide_deep` to chose best network architecture.  
 
-network  |1024-1024-1024 | 512-512-512 | 256-256-256 | 128-128-128 |
+network  |1024-1024-1024|512-512-512 | 256-256-256 | 128-128-128 |
 -------- | :---------: | :---------: | :---------: | :---------: |
 auc      | 0.7763      | 0.7762      | 0.7808      |0.7776       |
 logloss  | 0.4700      | 0.4709      | 0.4662      |0.4687       |
 
-
-
 From the result we found that `256-256-256` architecture works best,
 we also found that dropout decrease the performance.
+
+
+Then, we evaluate `wide_deep` with different number of layers using `256-256-256` architecture
+
+layers   |  3   |  5   |  7   |  9   |  
+---      | ---  | ---  | ---  | ---  | 
+auc      |0.7808|0.7783|0.7719|0.7654|  
+logloss  |0.4662|0.4680|0.4728|0.4805|
+
 
 
 Then, we evaluate our `wide_resdnn` model with connect mode and residual mode using fixed `256-256-256` architecture.
@@ -140,26 +147,33 @@ Then, we evaluate our `wide_resdnn` model with connect mode and residual mode us
 model             | auc    logloss| 
 ------            | ---------     |             
 wide_deep         |0.7808   0.4662|
-first_dense/concat|0.7548   0.5397|        
+first_dense/concat|0.7816   0.4661|        
 first_dense/add   |**0.7843   0.4636**|            
-last_dense/concat |0.7751   0.4830|             
+last_dense/concat |0.7767   0.4764|             
 last_dense/add    |0.7840   **0.4636**|   
-dense/concat      |0.7258   1.2312|             
+dense/concat      |0.7435   0.8494|             
 dense/add         |0.7839   0.4640|          
-resnet/concat     |0.7638   0.5023|            
-resnet/add        |0.7841   0.4637|             
+resnet/concat     |0.7708   0.5023|            
+resnet/add        |0.7841   0.4637|      
+       
 
-We found that `add` is consistently much better than `concat`, all the four connect mode result in similar results and our `wide_resdnn` significantly better than `wide_deep`.
 
-Then, we evaluate `wide_deep`, `wide_resdnn` model with different number of layers.
 
-model   |   wide_deep  |first_dense/add|last_dense/add| dense/add| resnet/add  |
----     | ---          | ---         | ---         | ---         | ---         |
-layers  |auc    logloss|auc   logloss|auc   logloss|auc   logloss|auc   logloss|
-3       |0.7808 0.4662 |0.7843 0.4636|0.7840 0.4636|0.7839 0.4640|0.7841 0.4637|
-5       |0.7783 0.4680 |             |0.7313 0.6651
-7       |||||
-9       |||||
+
+We found that `add` is consistently better than `concat`, all the four connect mode result in similar results and our `wide_resdnn` significantly better than `wide_deep`.
+
+
+Then, we evaluate `multi-resdnn`.
+
+network      |128-128-128, 128-128-128|
+---          | ---                    |
+connect_mode |first_dense,last_dense  | 
+residual_mode|add,add                 |
+auc          |0.7849                  |
+logloss      |0.4632                  |
+
+We found that multi resdnn has a small improvement.
+
 
 Finally, we need to evaluate model variance, we run each model 10 times to calculate related auc and logloss statics.
 The network setting is `256-256-256`.
@@ -176,58 +190,31 @@ model | wide_deep   | wide_resdnn |
 8     |0.7767 0.4699|0.7841 0.4638|
 9     |0.7775 0.4689|0.7827 0.4654|
 10    |0.7821 0.4655|0.7831 0.4647|
-**mean**|0.7796 0.4675|0.7831 0.4651|
-**std** |0.0023 0.0017|0.0009 0.0013|
+**mean**|**0.7796 0.4675**|**0.7831 0.4651**|
+**std** |**0.0023 0.0017**|**0.0009 0.0013**                       |
 
 We found `wide_resdnn` is significantly better than `wide_deep` and has lower variance.
 
 ### avazu dataset
 First, we evaluate the base model `wide_deep` to chose best network architecture. 
-wide_deep| 512-512-512 | 256-256-256 | 128-128-128 |
--------- | ----------- | ----------- | ----------- | 
-auc      |  0.7528     | 0.7529      | 0.7528      |
-logloss  |  0.3950     | 0.3950      | 0.3950      |
+wide_deep| 512-512-512 | 256-256-256 | 128-128-128 | 64-64-64 |
+-------- | ----------- | ----------- | ----------- | -------- |
+auc      |  0.7528     | 0.7529      | 0.7528      | 0.7529
+logloss  |  0.3950     | 0.3950      | 0.3950      | 0.3950
 We found `hidden size` has little influence on performance.
 
-Then, we evaluate our `wide_resdnn` model with connect mode and residual mode using fixed `256-256-256` architecture.
+Then, we evaluate our `wide_resdnn` model with connect mode and residual mode using fixed `64-64-64` architecture.
 
 model             | auc   logloss | 
 ------            | ---------     |             
-wide_deep         |0.7529   0.3950|
-first_dense/concat|0.7524   0.3951|        
-first_dense/add   |0.7522   0.3952|            
-last_dense/concat |0.7526   0.3951|             
-last_dense/add    |0.7520   0.3953|   
-dense/concat      |0.7526   0.3950|             
-dense/add         ||          
-resnet/concat     |0.7825   0.3951|            
-resnet/add        |**0.7534   0.3946**| 
+wide_deep         |0.7505   0.3966|
+first_dense/concat|0.7517   0.3955|        
+first_dense/add   |0.7533   0.3948|            
+last_dense/concat |0.7528   0.3949|             
+last_dense/add    |0.7527   0.3951|   
+dense/concat      |0.7528   0.3949|             
+dense/add         |**0.7544   0.3943**|          
+resnet/concat     |0.7525   0.3951|            
+resnet/add        |0.7537   0.3943| 
     
-    
-Then, we evaluate `wide_deep`, `wide_resdnn` model with different number of layers.
 
-model   |   wide_deep  |first_dense/add|last_dense/add| dense/add| resnet/add  |
----     | ---          | ---         | ---         | ---         | ---         |
-layers  |auc    logloss|auc   logloss|auc   logloss|auc   logloss|auc   logloss|
-3       |0.7529 0.3950 |||||
-5       | |             |
-7       |||||
-9       |||||
-
-Finally, we need to evaluate model variance, we run each model 10 times to calculate related auc and logloss statics.
-The network setting is `256-256-256`.
-
-model | wide_deep    | wide_resdnn |
----   | ---          | ---         |
-1     |0.7519  0.3954||
-2     |||
-3     |||
-4     |||
-5     ||| 
-6     |||
-7     |||
-8     |||
-9     |||
-10    |||
-**mean**|||
-**std** |||

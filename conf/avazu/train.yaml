@@ -22,15 +22,19 @@ model:
   # wide
   wide_learning_rate: 0.1
   wide_lr_decay: true
+  wide_lr_decay_steps: 1000
+  wide_lr_decay_rate: 0.95
   wide_l1: 0.5
   wide_l2: 1
   # deep
-  hidden_units: [256, 256, 256]
+  hidden_units: [64, 64, 64]
   connect_mode: resnet
   residual_mode: concat
 
-  deep_learning_rate: 0.05
+  deep_learning_rate: 0.1
   deep_lr_decay: true
+  deep_lr_decay_steps: 1000
+  deep_lr_decay_rate: 0.95
   activation_function: tf.nn.relu
   deep_l1: 0.01
   deep_l2: 0.01

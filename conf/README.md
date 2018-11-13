@@ -98,6 +98,8 @@ model:
   # Wide Parameters                  
   wide_learning_rate: 0.1           # wide part initial learning rate
   wide_lr_decay: true               # wide part whether to use learning rate decay or not
+  wide_lr_decay_steps: 1000         # wide part learning rate decay steps
+  wide_lr_decay_rate: 0.95          # wide part learning rate decay rate
   wide_l1: 0.5                      # optional, wide part l1 regularization lambda
   wide_l2: 1                        # optional, wide part l2 regularization lambda
 
@@ -123,6 +125,8 @@ model:
 
   deep_learning_rate: 0.1           # deep part initial learning rate
   deep_lr_decay: false              # deep part whether to use learning rate decay or not
+  deep_lr_decay_steps: 1000         # deep part learning rate decay steps      
+  deep_lr_decay_rate: 0.9           # deep part learning rate decay rate
   activation_function: tf.nn.relu   # activation function, must use tf API format
   deep_l1: 0.01                     # optional, deep part l1 regularization lambda
   deep_l2: 0.01                     # optional, deep part l2 regularization lambda

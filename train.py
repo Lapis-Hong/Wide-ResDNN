@@ -22,8 +22,8 @@ from wide_resdnn.read_conf import Config
 from wide_resdnn.util import elapse_time
 
 # Config file path, change it to use different data.
-# CONFIG = Config("conf/criteo")
-CONFIG = Config("conf/avazu")
+CONFIG = Config("conf/criteo")
+# CONFIG = Config("conf/avazu")
 
 parser = argparse.ArgumentParser(description='Train Wide and Deep Model.')
 

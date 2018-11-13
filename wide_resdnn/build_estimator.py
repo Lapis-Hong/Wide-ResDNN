@@ -109,14 +109,14 @@ def _build_distributed(TF_CONFIG):
             assert not run_config.is_chief
 
 
-def _build_opt(opt, lr, l1, l2, lr_decay):
+def _build_opt(opt, lr, l1, l2, lr_decay, lr_decay_steps=10000, lr_decay_rate=0.96):
     if lr_decay:
         return lambda: opt(
             learning_rate=tf.train.exponential_decay(
                 learning_rate=lr,
                 global_step=tf.train.get_global_step(),
-                decay_steps=10000,
-                decay_rate=0.96),
+                decay_steps=lr_decay_steps,
+                decay_rate=lr_decay_rate),
             l1_regularization_strength=l1,
             l2_regularization_strength=l2)
     else:
@@ -139,9 +139,11 @@ def build_estimator(model_dir, model_type, conf):
     conf = conf.model
     # Optimizer with regularization and learning rate decay.
     wide_opt = _build_opt(
-        tf.train.FtrlOptimizer, conf["wide_learning_rate"], conf["wide_l1"], conf["wide_l2"], conf["wide_lr_decay"])
+        tf.train.FtrlOptimizer, conf["wide_learning_rate"], conf["wide_l1"], conf["wide_l2"],
+        conf["wide_lr_decay"], conf["wide_lr_decay_steps"], conf["wide_lr_decay_rate"])
     deep_opt = _build_opt(
-        tf.train.ProximalAdagradOptimizer, conf["deep_learning_rate"], conf["deep_l1"], conf["deep_l2"], conf["deep_lr_decay"])
+        tf.train.ProximalAdagradOptimizer, conf["deep_learning_rate"], conf["deep_l1"], conf["deep_l2"],
+        conf["deep_lr_decay"], conf["deep_lr_decay_steps"], conf["wide_lr_decay_rate"])
 
     return WideAndDeepClassifier(
         model_type=model_type,

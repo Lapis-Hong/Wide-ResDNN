@@ -134,7 +134,10 @@ def _dnn_logit_fn(features, mode, model_id, units,
                             connect_map[int(j)] = [int(i)]
                         else:
                             connect_map[j].append(int(i))
-                    previous_layers = [net for idx, net in enumerate(layers) if idx in connect_map[layer_id + 1]]
+                    if layer_id + 1 in connect_map:
+                        previous_layers = [net for idx, net in enumerate(layers) if idx in connect_map[layer_id + 1]]
+                    else:
+                        previous_layers = []
                     net = residual_fn([net]+previous_layers, residual_mode)
 
                 layers.append(net)
