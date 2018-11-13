@@ -22,7 +22,7 @@ We use Kaggle Criteo and Avazu Dataset as examples.
 
 ### Requirements
 - Python 2.7
-- TensorFlow >= 1.4
+- TensorFlow >= 1.10
 - NumPy
 - pyyaml
 
@@ -133,13 +133,14 @@ From the result we found that `256-256-256` architecture works best,
 we also found that dropout decrease the performance.
 
 
-Then, we evaluate `wide_deep` with different number of layers using `256-256-256` architecture
+Then, we evaluate `wide_deep` with different number of layers using `256` hidden units.
 
-layers   |  3   |  5   |  7   |  9   |  
----      | ---  | ---  | ---  | ---  | 
-auc      |0.7808|0.7783|0.7719|0.7654|  
-logloss  |0.4662|0.4680|0.4728|0.4805|
+layers   | 2    | 3    |  5   |  7   |  9   |  
+---      | ---  |---   | ---  | ---  | ---  | 
+auc      |0.7826|0.7808|0.7783|0.7719|0.7654|  
+logloss  |0.4649|0.4662|0.4680|0.4728|0.4805|
 
+From the result we found that the performance degrade as the network become deeper.
 
 
 Then, we evaluate our `wide_resdnn` model with connect mode and residual mode using fixed `256-256-256` architecture.
@@ -197,6 +198,7 @@ We found `wide_resdnn` is significantly better than `wide_deep` and has lower va
 
 ### avazu dataset
 First, we evaluate the base model `wide_deep` to chose best network architecture. 
+
 wide_deep| 512-512-512 | 256-256-256 | 128-128-128 | 64-64-64 |
 -------- | ----------- | ----------- | ----------- | -------- |
 auc      |  0.7528     | 0.7529      | 0.7528      | 0.7529
