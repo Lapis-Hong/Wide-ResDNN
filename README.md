@@ -201,8 +201,9 @@ First, we evaluate the base model `wide_deep` to chose best network architecture
 
 wide_deep| 512-512-512 | 256-256-256 | 128-128-128 | 64-64-64 |
 -------- | ----------- | ----------- | ----------- | -------- |
-auc      |  0.7528     | 0.7529      | 0.7528      | 0.7529
-logloss  |  0.3950     | 0.3950      | 0.3950      | 0.3950
+auc      |  0.7528     | 0.7529      | 0.7528      | 0.7529   |
+logloss  |  0.3950     | 0.3950      | 0.3950      | 0.3950   |
+
 We found `hidden size` has little influence on performance.
 
 Then, we evaluate our `wide_resdnn` model with connect mode and residual mode using fixed `64-64-64` architecture.
