@@ -124,7 +124,7 @@ The specific parameters setting see `conf/*/train.yaml`
 ### criteo dataset
 First, we evaluate the base model `wide_deep` to chose best network architecture.  
 
-network  |1024-1024-1024|512-512-512 | 256-256-256 | 128-128-128 |
+network  |1024-1024-1024|512-512-512 | 256-256-256 | 128-128-1a28 |
 -------- | :---------: | :---------: | :---------: | :---------: |
 auc      | 0.7763      | 0.7762      | 0.7808      |0.7776       |
 logloss  | 0.4700      | 0.4709      | 0.4662      |0.4687       |
@@ -147,7 +147,8 @@ Then, we evaluate our `wide_resdnn` model with connect mode and residual mode us
 
 model             | auc    logloss| 
 ------            | ---------     |             
-wide_deep         |0.7808   0.4662|
+wide_deep         |0.7798   0.4672|d
+
 first_dense/concat|0.7816   0.4661|        
 first_dense/add   |**0.7843   0.4636**|            
 last_dense/concat |0.7767   0.4764|             
@@ -157,8 +158,6 @@ dense/add         |0.7839   0.4640|
 resnet/concat     |0.7708   0.5023|            
 resnet/add        |0.7841   0.4637|      
        
-
-
 
 
 We found that `add` is consistently better than `concat`, all the four connect mode result in similar results and our `wide_resdnn` significantly better than `wide_deep`.
@@ -183,7 +182,7 @@ model | wide_deep   | wide_resdnn |
 ---   | ------      | ---         |
 1     |0.7808 0.4662|0.7843 0.4636|
 2     |0.7798 0.4672|0.7838 0.4652|
-3     |0.7783 0.4685|0.7821 0.4677|
+3     |0.7783 0.4685|0.7842 0.4640|
 4     |0.7828 0.4653|0.7818 0.4670|
 5     |0.7767 0.4695|0.7841 0.4638| 
 6     |0.7826 0.4651|0.7823 0.4653|
@@ -191,8 +190,8 @@ model | wide_deep   | wide_resdnn |
 8     |0.7767 0.4699|0.7841 0.4638|
 9     |0.7775 0.4689|0.7827 0.4654|
 10    |0.7821 0.4655|0.7831 0.4647|
-**mean**|**0.7796 0.4675**|**0.7831 0.4651**|
-**std** |**0.0023 0.0017**|**0.0009 0.0013**                       |
+**mean**|**0.7796 0.4675**|**0.7834 0.4648**|
+**std** |**0.0023 0.0017**|**0.0009 0.0010**                       |
 
 We found `wide_resdnn` is significantly better than `wide_deep` and has lower variance.
 
