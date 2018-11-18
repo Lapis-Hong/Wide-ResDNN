@@ -44,8 +44,8 @@ def _wide_deep_combined_model_fn(
         dnn_feature_columns=None,
         dnn_optimizer='Adagrad',
         dnn_hidden_units=None,
-        dnn_connect_mode=None,
-        dnn_residual_mode=None,
+        dnn_shortcut=None,
+        dnn_aggregation=None,
         dnn_activation_fn=tf.nn.relu,
         dnn_dropout=None,
         dnn_batch_norm=None,
@@ -70,8 +70,8 @@ def _wide_deep_combined_model_fn(
         optimizer to use for training the DNN model. Defaults to the Adagrad
         optimizer.
       dnn_hidden_units: List of hidden units per DNN layer, nested lists for Multi DNN.
-      dnn_connect_mode: String or list for connect mode, list for Multi DNN.
-      dnn_residual_mode: `add` or `concat`, list for Multi DNN.
+      dnn_shortcut: String or list for connect mode, list for Multi DNN.
+      dnn_aggregation: `sum` or `concat`, list for Multi DNN.
       dnn_activation_fn: Activation function applied to each DNN layer. If `None`,
           will use `tf.nn.relu`.
       dnn_dropout: When not `None`, the probability we will drop out a given DNN
@@ -110,8 +110,8 @@ def _wide_deep_combined_model_fn(
             dnn_logit_fn = multidnn_logit_fn_builder(
                 units=head.logits_dimension,
                 hidden_units_list=dnn_hidden_units,
-                connect_mode_list=dnn_connect_mode,
-                residual_mode_list=dnn_residual_mode,
+                shortcut_list=dnn_shortcut,
+                aggregation_list=dnn_aggregation,
                 feature_columns=dnn_feature_columns,
                 activation_fn=dnn_activation_fn,
                 dropout=dnn_dropout,
@@ -196,8 +196,8 @@ class WideAndDeepClassifier(tf.estimator.Estimator):
                  dnn_feature_columns=None,
                  dnn_optimizer='Adagrad',
                  dnn_hidden_units=None,
-                 dnn_connect_mode=None,
-                 dnn_residual_mode=None,
+                 dnn_shortcut=None,
+                 dnn_aggregation=None,
                  dnn_activation_fn=tf.nn.relu,
                  dnn_dropout=None,
                  dnn_batch_norm=None,
@@ -223,7 +223,7 @@ class WideAndDeepClassifier(tf.estimator.Estimator):
                 the deep part of the model. Defaults to Adagrad optimizer.
             dnn_hidden_units: List of hidden units per layer. All layers are fully
                 connected.
-            dnn_residual_mode: `add` or `concat` residual connections.
+            dnn_aggregation: `sum` or `concat` residual connections.
             dnn_activation_fn: Activation function applied to each layer. If None,
                 will use `tf.nn.relu`.
             dnn_dropout: When not None, the probability we will drop out
@@ -289,8 +289,8 @@ class WideAndDeepClassifier(tf.estimator.Estimator):
                 linear_feature_columns=linear_feature_columns,
                 linear_optimizer=linear_optimizer,
                 dnn_feature_columns=dnn_feature_columns,
-                dnn_connect_mode=dnn_connect_mode,
-                dnn_residual_mode=dnn_residual_mode,
+                dnn_shortcut=dnn_shortcut,
+                dnn_aggregation=dnn_aggregation,
                 dnn_optimizer=dnn_optimizer,
                 dnn_hidden_units=dnn_hidden_units,
                 dnn_activation_fn=dnn_activation_fn,

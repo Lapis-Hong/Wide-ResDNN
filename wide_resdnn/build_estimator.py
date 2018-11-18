@@ -26,8 +26,23 @@ embedding_column = tf.feature_column.embedding_column
 
 
 def _embed_dim(dim):
-    """Empirical embedding dim"""
-    return int(np.power(2, np.ceil(np.log(dim ** 0.25))))
+    """Empirical embedding dim."""
+    # return int(6 * dim ** 0.25)  # 6×(category cardinality)1/4
+    # return int(2 * dim ** 0.25)  # 3×(category cardinality)1/4
+    return int(np.power(2, np.ceil(np.log(dim ** 0.25))))  # 0.4
+
+
+def _normalizer_fn_builder(method="std", *args):
+    """Normalizer function builder."""
+    if method == "std":
+        mean, std = args
+        return lambda x: (x - mean) / std
+    elif method == "min-max":
+        min_, max_ = args
+        return lambda x: (x-min_) / (x-max_)
+    else:
+        return lambda x: tf.log(x)  # Nan in summary histogram for: dnn/dnn/dnn_1/hiddenlayer_1/activation
+        # return lambda x: tf.log(x) / tf.log(max)
 
 
 def _build_model_columns(feature_conf):
@@ -58,7 +73,9 @@ def _build_model_columns(feature_conf):
                     deep_dim += embedding_dim
         else:  # continuous features
             mean, std, boundaries = f_param["mean"] or 0, f_param["std"] or 1, f_param["boundaries"]
-            col = numeric_column(feature, shape=(1,), default_value=None, dtype=tf.float32, normalizer_fn=lambda x: (x - mean) / std)
+
+            col = numeric_column(
+                feature, shape=(1,), normalizer_fn=_normalizer_fn_builder("std", mean, std))
             deep_columns.append(col)
             deep_dim += 1
             if boundaries:
@@ -139,11 +156,21 @@ def build_estimator(model_dir, model_type, conf):
     conf = conf.model
     # Optimizer with regularization and learning rate decay.
     wide_opt = _build_opt(
-        tf.train.FtrlOptimizer, conf["wide_learning_rate"], conf["wide_l1"], conf["wide_l2"],
+        tf.train.FtrlOptimizer,
+        conf["wide_learning_rate"], conf["wide_l1"], conf["wide_l2"],
         conf["wide_lr_decay"], conf["wide_lr_decay_steps"], conf["wide_lr_decay_rate"])
     deep_opt = _build_opt(
-        tf.train.ProximalAdagradOptimizer, conf["deep_learning_rate"], conf["deep_l1"], conf["deep_l2"],
-        conf["deep_lr_decay"], conf["deep_lr_decay_steps"], conf["wide_lr_decay_rate"])
+        tf.train.ProximalAdagradOptimizer,
+        conf["deep_learning_rate"], conf["deep_l1"], conf["deep_l2"],
+        conf["deep_lr_decay"], conf["deep_lr_decay_steps"], conf["deep_lr_decay_rate"])
+
+    # deep_opt = tf.train.AdamOptimizer(
+    #     learning_rate=0.001,
+    #     beta1=0.9,
+    #     beta2=0.999,
+    #     epsilon=1e-08,
+    #     use_locking=False,
+    #     name='Adam')
 
     return WideAndDeepClassifier(
         model_type=model_type,
@@ -153,8 +180,8 @@ def build_estimator(model_dir, model_type, conf):
         dnn_feature_columns=deep_columns,
         dnn_optimizer=deep_opt,
         dnn_hidden_units=conf["hidden_units"],
-        dnn_connect_mode=conf["connect_mode"],
-        dnn_residual_mode=conf["residual_mode"],
+        dnn_shortcut=conf["shortcut"],
+        dnn_aggregation=conf["aggregation"],
         dnn_activation_fn=eval(conf["activation_function"]),
         dnn_dropout=conf["dropout"],
         dnn_batch_norm=conf["batch_normalization"],
