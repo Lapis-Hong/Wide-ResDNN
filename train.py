@@ -46,6 +46,9 @@ parser.add_argument(
     '--epochs_per_eval', type=int, default=CONFIG.train["epochs_per_eval"],
     help='The number of training epochs to run between evaluations.')
 parser.add_argument(
+    '--steps_per_eval', type=int, default=CONFIG.train["steps_per_eval"],
+    help='The number of training steps to run between evaluations.')
+parser.add_argument(
     '--batch_size', type=int, default=CONFIG.train["batch_size"],
     help='Number of examples per batch.')
 parser.add_argument(
@@ -110,18 +113,19 @@ def train(model):
 def train_and_eval(model):
     """tf.estimator train and eval function, eval between steps."""
     train_spec = tf.estimator.TrainSpec(
-        input_fn=lambda: input_fn(CONFIG, FLAGS.train_data, FLAGS.epochs_per_eval, FLAGS.batch_size, True, FLAGS.num_samples),
-        max_steps=10000)
+        input_fn=lambda: input_fn(CONFIG, FLAGS.train_data, FLAGS.train_epochs, FLAGS.batch_size, True, FLAGS.num_samples),
+        max_steps=None)
     eval_spec = tf.estimator.EvalSpec(
         input_fn=lambda: input_fn(CONFIG, FLAGS.dev_data, 1, FLAGS.batch_size, False),
-        steps=100,
-        start_delay_secs=1800
+        steps=FLAGS.steps_per_eval,
+        start_delay_secs=180,
+        throttle_secs=60,
     )
     tf.estimator.train_and_evaluate(model, train_spec, eval_spec)
 
 
 def main(_):
-    print("Using TensorFlow version %s, need TensorFlow 1.4 or later." % tf.__version__)
+    print("Using TensorFlow version %s, need TensorFlow 1.10 or later." % tf.__version__)
     CONFIG.print_config()  # print config
     model_dir = os.path.join(FLAGS.model_dir, FLAGS.model_type)
     print('Model directory: {}'.format(model_dir))
@@ -147,11 +151,16 @@ def main(_):
             # wait for incoming connection forever
             server.join()
         else:
-            train(model)
-            # train_and_eval(model)
+            if FLAGS.steps_per_eval:
+                train_and_eval(model)
+            else:
+                train(model)
     else:
-        train(model)  # local run
-        # train_and_eval(model)
+        if FLAGS.steps_per_eval:
+            train_and_eval(model)
+        else:
+            train(model)  # local run
+        train(model)
 
 if __name__ == '__main__':
     FLAGS, unparsed = parser.parse_known_args()

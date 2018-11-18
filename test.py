@@ -20,7 +20,9 @@ from wide_resdnn.dataset import input_fn
 from wide_resdnn.read_conf import Config
 from wide_resdnn.util import elapse_time
 
-CONFIG = Config().train
+# Config file path, change it to use different data.
+CONFIG = Config("conf/criteo")
+# CONFIG = Config("conf/avazu")
 parser = argparse.ArgumentParser(description='Evaluate Wide and Deep Model.')
 
 parser.add_argument(
@@ -28,28 +30,28 @@ parser.add_argument(
     help='Path to configuration.')
 
 parser.add_argument(
-    '--test_data', type=str, default=CONFIG["test_data"],
+    '--test_data', type=str, default=CONFIG.train["test_data"],
     help='Evaluating data dir.')
 
 parser.add_argument(
-    '--model_dir', type=str, default=CONFIG["model_dir"],
+    '--model_dir', type=str, default=CONFIG.train["model_dir"],
     help='Model checkpoint dir for evaluating.')
 
 parser.add_argument(
-    '--model_type', type=str, default=CONFIG["model_type"],
+    '--model_type', type=str, default=CONFIG.train["model_type"],
     help="Valid model types: {'wide', 'deep', 'wide_deep'}.")
 
 parser.add_argument(
-    '--batch_size', type=int, default=CONFIG["batch_size"],
+    '--batch_size', type=int, default=CONFIG.train["batch_size"],
     help='Number of examples per batch.')
 
 parser.add_argument(
-    '--checkpoint_path', type=str, default=CONFIG["checkpoint_path"],
+    '--checkpoint_path', type=str, default=CONFIG.train["checkpoint_path"],
     help="Path of a specific checkpoint to evaluate. If None, the latest checkpoint in model_dir is used.")
 
 
 def main(_):
-    print("Using TensorFlow version %s, need TensorFlow 1.4 or later." % tf.__version__)
+    print("Using TensorFlow version %s, need TensorFlow 1.10 or later." % tf.__version__)
     # assert "1.4" <= tf.__version__, "TensorFlow r1.4 or later is needed"
     print('Model type: {}'.format(FLAGS.model_type))
     model_dir = os.path.join(FLAGS.model_dir, FLAGS.model_type)
