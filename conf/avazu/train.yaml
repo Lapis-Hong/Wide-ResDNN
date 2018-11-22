@@ -10,6 +10,7 @@ train:
   batch_size: 1000
   train_epochs: 20
   epochs_per_eval: 1
+  steps_per_eval:
   keep_train: 0
   num_samples: 7300000
   checkpoint_path:
@@ -28,8 +29,8 @@ model:
   wide_l2: 1
   # deep
   hidden_units: [64, 64, 64]
-  connect_mode: resnet
-  residual_mode: concat
+  shortcut: resnet
+  aggregation: concat
 
   deep_learning_rate: 0.1
   deep_lr_decay: true

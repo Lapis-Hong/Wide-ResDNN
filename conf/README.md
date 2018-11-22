@@ -29,9 +29,9 @@ f1:
     type: category    
     parameter: 
          hash_bucket_size: 1000  # required
-         embedding_dim: 8        # optional, set empty to not use category feature for deep input;
+         embedding_dim: 8        # optional, set 0 to not use category feature for deep input;
                                              set positive integer to embedding category feature for deep using tf.feature.embedding_column;
-                                             set `auto` to use empirical formula to calculate embedding dim.
+                                             set empty to use empirical formula to calculate embedding dim.
                                              
 # For continuous feature, using `tf.feature_column.numeric_column`
 f2:                 
@@ -53,15 +53,6 @@ If category size=1000, how much should hash_bucket_size be ?
    Here use the strategy that
    -  for low sparsity category, set `hash_bucket_size` 3~4*category size to reduce collision  
    -  for high sparsity category, set 1.5~2*category size to save memory.  
-
-### Notes:
-For feature.basic config:
-1. Use static hash_bucket_size=1000 and use category features for deep with static embedding_dim=8.
-2. No standard normalization and not use continuous feature for wide.
-
-For feature.advance config:
-1. Use dynamic hash_bucket_size and use category features for deep with dynamic embedding_dim.
-2. Do standard normalization and use continuous feature for wide.
 
 ## Train config
 All train config divided into following four part: 
@@ -87,12 +78,14 @@ train:
   batch_size: 256                   # batch size
   train_epochs: 5                   # train epochs
   epochs_per_eval: 1                # evaluation every epochs
+  steps_per_eval:                   # evaluation every steps for large dataset, it will override `epochs_per_eval` options. 
   keep_train: 0                     # bool, set true or 1 to keep train from ckpt
   num_samples: 50000000             # train sample size for shuffle buffer size
   checkpoint_path:                  # optional, checkpoint path used for testing  
   skip_lines: 1                     # optional, dataset skip lines
   field_delim: '\t'                 # data field delimeter
   verbose: 1                        # bool, Set 0 for tf log level INFO, 1 for ERROR 
+
 # Model Parameters
 model:
   # Wide Parameters                  
@@ -104,7 +97,7 @@ model:
   wide_l2: 1                        # optional, wide part l2 regularization lambda
 
   # Deep Parameters
-  # connect_mode: one of {`normal`, `first_dense`, `last_dense`, `dense`, `resnet`} or arbitrary connections
+  # shortcut: one of {`normal`, `first_dense`, `last_dense`, `dense`, `resnet`} or arbitrary connections
   #   1. `normal`: normal DNN with no residual connections.
   #   2. `first_dense`: add addition connections from first input layer to all hidden layers.
   #   3. `last_dense`: add addition connections from all previous layers to last layer.
@@ -116,12 +109,12 @@ model:
   # To use multi dnn model, set nested hidden_units, list connect_mode, list residual_mode
   # Examples:
   # hidden_units: [[1024, 12,256], [512,256]] 
-  # connect_mode: [normal, dense]
-  # residual_mode: [add, concat]
+  # shortcut: [normal, dense]
+  # aggregation: [sum, concat]
 
-  hidden_units: [1024, 512, 256]    # hidden_units: List of each hidden layer units, set nested list for Multi DNN. 
-  connect_mode: normal              # see above
-  residual_mode:                    # one of `add` or `concat`, must be set when connect_mode is not `normal`
+  hidden_units: [1024, 512, 256]  # hidden_units: List of each hidden layer units, set nested list for Multi DNN. 
+  shortcut: normal                # see above
+  aggregation:                    # one of `sum` or `concat`, must be set when shortcut is not `normal`
 
   deep_learning_rate: 0.1           # deep part initial learning rate
   deep_lr_decay: false              # deep part whether to use learning rate decay or not

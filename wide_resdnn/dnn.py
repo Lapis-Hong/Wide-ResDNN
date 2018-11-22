@@ -40,10 +40,10 @@ def _dnn_logit_fn(features, mode, model_id, units,
         hidden_units: Iterable of integer number of hidden units per layer.
         shortcut: String or list, support several patterns.
             `normal`: use normal DNN with no residual connections
-            `first_dense`: add addition connections from first input layer to all hidden layers.
-            `last_dense`: add addition connections from all previous layers to last layer.
-            `dense`: add addition connections between all layers, similar to DenseNet.
-            `resnet`: add addition connections between adjacent layers, similar to ResNet.
+            `first_dense`: add addition connections from first hidden layer to all hidden layers.
+            `last_dense`: add addition connections from all previous hidden layers to last layer.
+            `dense`: add addition connections between all hidden layers, similar to DenseNet.
+            `resnet`: add addition connections between adjacent hidden layers, similar to ResNet.
             arbitrary connections string: add addition connections between layer0 to layer1 like '01', separated by comma
                 eg: '01,03,12'  index start from zero (input_layer), max index is len(hidden_units), smaller index first.
         aggregation: `sum` or `concat`, `sum` can only used for same hidden size architecture.
@@ -83,31 +83,28 @@ def _dnn_logit_fn(features, mode, model_id, units,
         net = tf.feature_column.input_layer(
             features=features,
             feature_columns=feature_columns)
-    layers = [net]
 
-    # `sum` mode residual connection start from 1st hidden layer, not input layer (different dim).
-    if shortcut != "normal" and aggregation == "sum":
-        with tf.variable_scope(
-                'dnn_{}/hiddenlayer_{}'.format(model_id, 1), values=(net,)) as hidden_layer_scope:
-            net = tf.layers.dense(
-                net,
-                units=hidden_units[0],
-                activation=activation_fn,
-                kernel_initializer=tf.glorot_uniform_initializer(),  # also called Xavier uniform initializer.
-                name=hidden_layer_scope)
-            add_layer_summary(net, hidden_layer_scope.name)
-            # Add dropout and BN.
-            if dropout is not None and mode == tf.estimator.ModeKeys.TRAIN:
-                net = tf.layers.dropout(net, rate=dropout, training=True)  # dropout rate
-            if batch_norm:
-                net = tf.layers.batch_normalization(net)
-        hidden_units = hidden_units[1:]
-        layers = [net]  # 1st hidden layer
+    # Input layer to first hidden layer.
+    with tf.variable_scope(
+            'dnn_{}/hiddenlayer_{}'.format(model_id, 1), values=(net,)) as hidden_layer_scope:
+        net = tf.layers.dense(
+            net,
+            units=hidden_units[0],
+            activation=activation_fn,
+            kernel_initializer=tf.glorot_uniform_initializer(),  # also called Xavier uniform initializer.
+            name=hidden_layer_scope)
+        add_layer_summary(net, hidden_layer_scope.name)
+        # Add dropout and BN.
+        if dropout is not None and mode == tf.estimator.ModeKeys.TRAIN:
+            net = tf.layers.dropout(net, rate=dropout, training=True)  # dropout rate
+        if batch_norm:
+            net = tf.layers.batch_normalization(net)
+    add_layer_summary(net, hidden_layer_scope.name)
+    layers = [net]  # 1st hidden layer
 
-    for layer_id, num_hidden_units in enumerate(hidden_units):
-        layer_id += (aggregation == "sum")  # If sum mode, layer_id += 1
+    for layer_id, num_hidden_units in enumerate(hidden_units[1:]):
         with tf.variable_scope(
-                'dnn_{}/hiddenlayer_{}'.format(model_id, layer_id+1), values=(net,)) as hidden_layer_scope:
+                'dnn_{}/hiddenlayer_{}'.format(model_id, layer_id+2), values=(net,)) as hidden_layer_scope:
             net = tf.layers.dense(
                 net,
                 units=num_hidden_units,

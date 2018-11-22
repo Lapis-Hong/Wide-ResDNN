@@ -223,7 +223,8 @@ class WideAndDeepClassifier(tf.estimator.Estimator):
                 the deep part of the model. Defaults to Adagrad optimizer.
             dnn_hidden_units: List of hidden units per layer. All layers are fully
                 connected.
-            dnn_aggregation: `sum` or `concat` residual connections.
+            dnn_shortcut: String or list for connect mode, list for Multi DNN.
+            dnn_aggregation: `sum` or `concat` aggregation methods.
             dnn_activation_fn: Activation function applied to each layer. If None,
                 will use `tf.nn.relu`.
             dnn_dropout: When not None, the probability we will drop out
