@@ -65,7 +65,7 @@ def input_fn(conf, data_file, num_epochs, batch_size, shuffle=True, shuffle_buff
     # Use `Dataset.map()` to build a pair of a feature dictionary
     # and a label tensor for each example.
     if shuffle:
-        shuffle_buffer_size = shuffle_buffer_size or batch_size * 1000
+        shuffle_buffer_size = shuffle_buffer_size or batch_size * 1000  # Why it determines the train speed ???
         dataset = dataset.shuffle(buffer_size=shuffle_buffer_size, seed=123)  # set of Tensor object
     # Call repeat after shuffling, to prevent separate epochs from blending together.
     dataset = dataset.map(_parse_csv, num_parallel_calls=4).repeat(num_epochs).batch(batch_size)

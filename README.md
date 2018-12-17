@@ -75,18 +75,18 @@ Note: the test file label is unreleased, here we randomly split train.csv into t
 `wide_resdnn` is a simple but powerful variant of `wide_deep`, the main difference is the connection mode of deep part (DNN).
 
 We hope to figure out the best kind of skip connections for large scale sparse data tasks.
-Here we provide 5 types connection mode (arbitrary connection is supported also) and 2 types residual mode as follows: 
+Here we provide five shortcut patterns (arbitrary connection is supported also) and  two aggregation methods as follows: 
 
-connect_mode:
+shortcut:
 - `normal`: use normal DNN with no residual connections
 - `first_dense`: add addition connections from first input layer to all hidden layers.
 - `last_dense`: add addition connections from all previous layers to last layer.
 - `dense`: add addition connections between all layers, similar to DenseNet.
 - `resnet`: add addition connections between adjacent layers, similar to ResNet.
 
-residual_mode: 
-- `add`: add the previous output, can only used for same hidden size architecture.
-- `concat`: concat the previous layers output
+aggregation: 
+- `sum`: sum the previous output, can only used for same hidden size architecture.
+- `concat`: concatenate the previous layers output
 
 
 ## Usage
@@ -124,10 +124,10 @@ The specific parameters setting see `conf/*/train.yaml`
 ### criteo dataset
 First, we evaluate the base model `wide_deep` to chose best network architecture.  
 
-network  |1024-1024-1024|512-512-512 | 256-256-256 | 128-128-1a28 |
--------- | :---------: | :---------: | :---------: | :---------: |
-auc      | 0.7763      | 0.7762      | 0.7808      |0.7776       |
-logloss  | 0.4700      | 0.4709      | 0.4662      |0.4687       |
+network |1024-1024-1024|512-512-512|256-256-256|128-128-128|64-64-64  |
+------- | :---------: | :---------:|:---------:|:---------:|:-------: |
+auc     | 0.7763      | 0.7762     |0.7798     |0.7776     |
+logloss | 0.4700      | 0.4709     |0.4672     |0.4687     |
 
 From the result we found that `256-256-256` architecture works best,
 we also found that dropout decrease the performance.
@@ -145,34 +145,33 @@ From the result we found that the performance degrade as the network become deep
 
 Then, we evaluate our `wide_resdnn` model with connect mode and residual mode using fixed `256-256-256` architecture.
 
-model             | auc    logloss| 
-------            | ---------     |             
-wide_deep         |0.7798   0.4672|d
-
-first_dense/concat|0.7816   0.4661|        
-first_dense/add   |**0.7843   0.4636**|            
-last_dense/concat |0.7767   0.4764|             
-last_dense/add    |0.7840   **0.4636**|   
-dense/concat      |0.7435   0.8494|             
-dense/add         |0.7839   0.4640|          
-resnet/concat     |0.7708   0.5023|            
-resnet/add        |0.7841   0.4637|      
+hidden size       | 256           | 64            |
+model             | auc    logloss| auc    logloss|
+------            | ---------     | ---           |         
+wide_deep         |0.7798   0.4672|     |
+first_dense/concat|0.7816   0.4661|0.7851   0.4629|       
+first_dense/sum   |**0.7843 0.4636**|0.7850  0.4630|           
+last_dense/concat |0.7767   0.4764|0.7836   0.4646|             
+last_dense/sum    |0.7840 **0.4636**|0.7839  0.4640|   
+dense/concat      |0.7435   0.8494|0.7662   0.5197|             
+dense/sum         |0.7839   0.4640|0.7821   0.4652|        
+resnet/concat     |0.7708   0.5023|0.7849   0.4633|      
+resnet/sum        |0.7841   0.4637|**0.7858  0.4627** |
        
 
-
-We found that `add` is consistently better than `concat`, all the four connect mode result in similar results and our `wide_resdnn` significantly better than `wide_deep`.
+We found that `sum` is consistently better than `concat` for `256-256-256`, all the four shortcut result in similar results and our `wide_resdnn` significantly better than `wide_deep`.
 
 
 Then, we evaluate `multi-resdnn`.
 
-network      |128-128-128, 128-128-128|
----          | ---                    |
-connect_mode |first_dense,last_dense  | 
-residual_mode|add,add                 |
-auc          |0.7849                  |
-logloss      |0.4632                  |
+network     |128-128-128,128-128-128|64-64-64,64-64|
+---         | ---                   |---           |
+shortcut    |first_dense,last_dense |resnet, first_dense|
+aggregation |sum,sum                |sum, sum      |
+auc         |0.7862                 |0.7857        |
+logloss     |0.4623                 |0.4625        |
 
-We found that multi resdnn has a small improvement.
+We found that `multi-ResDNN` has a small improvement.
 
 
 Finally, we need to evaluate model variance, we run each model 10 times to calculate related auc and logloss statics.
@@ -200,8 +199,8 @@ First, we evaluate the base model `wide_deep` to chose best network architecture
 
 wide_deep| 512-512-512 | 256-256-256 | 128-128-128 | 64-64-64 |
 -------- | ----------- | ----------- | ----------- | -------- |
-auc      |  0.7528     | 0.7529      | 0.7528      | 0.7529   |
-logloss  |  0.3950     | 0.3950      | 0.3950      | 0.3950   |
+auc      |  0.7504     | 0.7505      | 0.7504      | 0.7505   |
+logloss  |  0.3966     | 0.3966      | 0.3967      | 0.3966   |
 
 We found `hidden size` has little influence on performance.
 
@@ -211,12 +210,12 @@ model             | auc   logloss |
 ------            | ---------     |             
 wide_deep         |0.7505   0.3966|
 first_dense/concat|0.7517   0.3955|        
-first_dense/add   |0.7533   0.3948|            
+first_dense/sum   |0.7533   0.3948|            
 last_dense/concat |0.7528   0.3949|             
-last_dense/add    |0.7527   0.3951|   
+last_dense/sum    |0.7527   0.3951|   
 dense/concat      |0.7528   0.3949|             
-dense/add         |**0.7544   0.3943**|          
+dense/sum         |**0.7544   0.3943**|          
 resnet/concat     |0.7525   0.3951|            
-resnet/add        |0.7537   0.3943| 
+resnet/sum        |0.7537   0.3943| 
     
 
